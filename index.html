@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>English Master Dashboard</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b0d11;
+      color: #eaeef2;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      line-height: 1.5;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e2229; border-radius: 12px; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 12px; }
+
+    .app {
+      max-width: 1280px;
+      width: 100%;
+      background: rgba(18, 22, 30, 0.65);
+      backdrop-filter: blur(14px) saturate(1.4);
+      -webkit-backdrop-filter: blur(14px) saturate(1.4);
+      border-radius: 48px;
+      padding: 28px 28px 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      transition: all 0.2s;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .glass-badge {
+      background: rgba(59, 130, 246, 0.12);
+      backdrop-filter: blur(4px);
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      color: #93bbfc;
+      display: inline-block;
+    }
+
+    /* ===== LAYOUT ===== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .flex-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .mt-4 { margin-top: 24px; }
+    .mb-3 { margin-bottom: 16px; }
+    .gap-2 { gap: 12px; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: rgba(28, 33, 44, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 32px;
+      padding: 22px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s;
+    }
+    .card-glow {
+      background: linear-gradient(145deg, rgba(30, 40, 60, 0.5), rgba(18, 22, 30, 0.7));
+    }
+    .stat-card {
+      background: rgba(18, 22, 30, 0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      min-width: 100px;
+      flex: 1;
+    }
+
+    /* ===== PROGRESS RING ===== */
+    .ring-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+    .ring-svg {
+      transform: rotate(-90deg);
+      width: 110px;
+      height: 110px;
+    }
+    .ring-bg { fill: none; stroke: #2a2f3a; stroke-width: 8; }
+    .ring-progress { fill: none; stroke: url(#grad); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.6s; }
+    .ring-label {
+      position: absolute;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #f0f4ff;
+    }
+
+    /* ===== LESSON CARDS ===== */
+    .lesson-list { display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto; padding-left: 4px; }
+    .lesson-item {
+      background: rgba(22, 27, 38, 0.7);
+      border-radius: 20px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lesson-item:hover { background: rgba(40, 48, 64, 0.7); border-color: rgba(59, 130, 246, 0.2); }
+    .lesson-item .day { font-weight: 600; color: #93bbfc; }
+    .lesson-item .topic { font-weight: 500; }
+    .lesson-detail {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .lesson-detail.open { display: flex; }
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+    .task-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+    .task-grid input[type="checkbox"] { accent-color: #3b82f6; width: 18px; height: 18px; }
+
+    /* ===== VOCAB ===== */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .vocab-card {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .vocab-card .en { font-weight: 600; color: #d6e3ff; }
+    .vocab-card .fa { color: #b0c7e7; font-size: 0.9rem; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: #d6e3ff;
+      padding: 10px 22px;
+      border-radius: 60px;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+    .btn-primary {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover { background: #2563eb; transform: scale(0.98); }
+    .btn-outline { background: transparent; border-color: #3b82f6; }
+    .btn-outline:hover { background: rgba(59, 130, 246, 0.08); }
+    .btn-sm { padding: 6px 16px; font-size: 0.8rem; }
+
+    /* ===== NOTES ===== */
+    .note-editor {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 16px;
+      color: #eaeef2;
+      font-size: 0.95rem;
+      min-height: 120px;
+      resize: vertical;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .note-editor:focus { border-color: #3b82f6; }
+
+    /* ===== SETTINGS ===== */
+    .settings-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .app { padding: 18px; border-radius: 32px; }
+    }
+    @media (max-width: 600px) {
+      .ring-svg { width: 80px; height: 80px; }
+      .task-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app" role="main" aria-label="English Master Dashboard">
+
+  <!-- HEADER -->
+  <header class="flex-between" style="margin-bottom: 24px;">
+    <div>
+      <h1 style="background: linear-gradient(135deg, #f0f4ff, #93bbfc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">English Master</h1>
+      <span class="glass-badge">🔥 روز {{ currentDay }} از ۳۰</span>
+    </div>
+    <div class="flex-row">
+      <span class="glass-badge">⭐ {{ xp }} XP</span>
+      <span class="glass-badge">🎯 سطح {{ level }}</span>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="grid-2">
+    <!-- LEFT COL -->
+    <div>
+      <!-- STATS ROW -->
+      <div class="flex-row" style="margin-bottom: 18px;">
+        <div class="stat-card"><span>📅 تکمیل شده</span><br><strong>{{ completedDays }}/30</strong></div>
+        <div class="stat-card"><span>⏳ باقی‌مانده</span><br><strong>{{ remainingDays }}</strong></div>
+        <div class="stat-card"><span>🔥 استریک</span><br><strong>{{ streak }}</strong></div>
+        <div class="stat-card"><span>⏱ زمان</span><br><strong>{{ studyTime }} دقیقه</strong></div>
+      </div>
+
+      <!-- PROGRESS RING + QUOTE -->
+      <div class="card card-glow flex-row" style="justify-content: space-around; flex-wrap: wrap;">
+        <div style="position: relative; width: 120px; height: 120px;">
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+            <circle class="ring-bg" cx="60" cy="60" r="48"/>
+            <circle class="ring-progress" cx="60" cy="60" r="48" stroke-dasharray="301.6" stroke-dashoffset="{{ 301.6 * (1 - progress/100) }}"/>
+          </svg>
+          <div class="ring-label" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">{{ progress }}%</div>
+        </div>
+        <div style="max-width: 200px;">
+          <p style="font-style: italic; color: #b8cae8;">“{{ quote }}”</p>
+          <p style="font-size: 0.8rem; color: #7a8aaa;">💡 {{ tip }}</p>
+        </div>
+      </div>
+
+      <!-- TODAY'S LESSON -->
+      <div class="card" style="margin-top: 18px;">
+        <div class="flex-between"><h3>📘 درس امروز</h3><span class="glass-badge">روز {{ currentDay }}</span></div>
+        <p style="font-size: 1.2rem; font-weight: 500;">{{ todayTopic }}</p>
+        <p style="color: #b0c7e7;">{{ todayGrammar }}</p>
+        <button class="btn btn-primary" style="margin-top: 12px;" onclick="continueLearning()">▶ ادامه یادگیری</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COL: STATS PREVIEW + ACHIEVEMENTS -->
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <h3>🏆 دستاوردها</h3>
+        <div class="flex-row" style="gap: 8px; margin-top: 8px;">
+          <span v-for="ach in achievements" class="glass-badge" style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.2);">{{ ach }}</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📊 آمار</h3>
+        <div><span>واژگان: </span><strong>{{ vocabCount }}</strong></div>
+        <div><span>میانگین امتیاز: </span><strong>{{ avgScore }}%</strong></div>
+        <div><span>بیشترین استریک: </span><strong>{{ maxStreak }}</strong></div>
+        <div style="margin-top: 10px;"><canvas id="statsChart" width="200" height="100" style="width:100%; height:80px; border-radius: 16px;"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 30 DAY PLAN -->
+  <div class="card" style="margin-top: 28px;">
+    <div class="flex-between"><h2>📚 برنامه ۳۰ روزه</h2><input type="text" placeholder="جستجوی درس..." id="searchLesson" oninput="filterLessons()" style="background:rgba(0,0,0,0.3);border:1px solid #2a2f3a;border-radius:40px;padding:8px 16px;color:#eaeef2;width:200px;"></div>
+    <div class="lesson-list" id="lessonList"></div>
+  </div>
+
+  <!-- VOCABULARY SECTION -->
+  <div class="card" style="margin-top: 20px;">
+    <div class="flex-between"><h3>📖 واژگان</h3><input type="text" placeholder="جستجو..." id="searchVocab" oninput="filterVocab()" style="background:rgba(0,0,0,0.3);border:1px solid #2a2f3a;border-radius:40px;padding:6px 14px;color:#eaeef2;width:160px;"></div>
+    <div class="vocab-grid" id="vocabGrid"></div>
+  </div>
+
+  <!-- NOTES + GEMINI -->
+  <div class="grid-2" style="margin-top: 20px;">
+    <div class="card">
+      <h3>📝 یادداشت روز</h3>
+      <textarea class="note-editor" id="dailyNotes" placeholder="یادداشت‌های امروز..." oninput="saveNote()"></textarea>
+      <div class="flex-between"><span id="charCount">۰ کاراکتر</span><button class="btn btn-sm btn-outline" onclick="copyGeminiPrompt()">📋 کپی پرامپت Gemini</button></div>
+    </div>
+    <div class="card">
+      <h3>✨ Gemini Practice</h3>
+      <p style="color:#b0c7e7; font-size:0.9rem;">پرامپت اختصاصی برای تمرین امروز کپی کنید و در Gemini استفاده کنید.</p>
+      <pre style="background:rgba(0,0,0,0.3);padding:12px;border-radius:16px;font-size:0.8rem;white-space:pre-wrap;max-height:140px;overflow:auto;">{{ geminiPrompt }}</pre>
+      <button class="btn btn-sm btn-primary" onclick="copyGeminiPrompt()">📋 کپی پرامپت</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card" style="margin-top: 24px;">
+    <h3>⚙️ تنظیمات</h3>
+    <div class="settings-group">
+      <button class="btn btn-sm btn-outline" onclick="exportData()">📤 خروجی JSON</button>
+      <button class="btn btn-sm btn-outline" onclick="document.getElementById('importFile').click()">📥 ورودی JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-sm btn-outline" onclick="resetProgress()">🔄 بازنشانی پیشرفت</button>
+      <button class="btn btn-sm btn-outline" onclick="resetNotes()">🗑 پاک کردن یادداشت‌ها</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;margin-top:28px;font-size:0.8rem;color:#5a6a82;">✨ English Master • ۳۰ روز تا تسلط</div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ===== DATA =====
+    const CURRICULUM = [
+      { day:1, grammar:"To Be", topic:"معرفی و احوالپرسی", vocab:["I am","You are","Hello","Hi","Good morning","Goodbye","Name","Nice to meet","How are you","Fine"] },
+      { day:2, grammar:"Wh Questions", topic:"سوالات پایه", vocab:["What","Where","Who","When","Why","Which","How","Answer","Question","Speak"] },
+      { day:3, grammar:"Simple Present", topic:"زمان حال ساده", vocab:["Every day","Always","Usually","Sometimes","Never","Often","Eat","Drink","Work","Live"] },
+      { day:4, grammar:"Negative Sentences", topic:"جملات منفی", vocab:["Not","Don't","Doesn't","Never","No","Nothing","Nobody","Nowhere","Not yet","Not at all"] },
+      { day:5, grammar:"Family & Jobs", topic:"خانواده و شغل", vocab:["Mother","Father","Sister","Brother","Doctor","Teacher","Engineer","Student","Nurse","Driver"] },
+      { day:6, grammar:"Review", topic:"مرور هفته اول", vocab:["Review","Practice","Remember","Speak","Listen","Write","Read","Repeat","Understand","Learn"] },
+      { day:7, grammar:"Quiz", topic:"آزمون هفته اول", vocab:["Test","Question","Answer","Correct","Wrong","Score","Pass","Fail","Study","Result"] },
+      // week 2
+      { day:8, grammar:"Present Continuous", topic:"حال استمراری", vocab:["Now","At the moment","Today","This week","Currently","Wait","Talk","Walk","Run","Read"] },
+      { day:9, grammar:"Time", topic:"ساعت و زمان", vocab:["Clock","Hour","Minute","O'clock","Half","Quarter","Morning","Afternoon","Evening","Night"] },
+      { day:10, grammar:"Shopping", topic:"خرید", vocab:["Shop","Buy","Sell","Price","Money","Cheap","Expensive","Size","Color","Receipt"] },
+      { day:11, grammar:"Food", topic:"غذا", vocab:["Bread","Rice","Meat","Vegetable","Fruit","Water","Milk","Egg","Fish","Chicken"] },
+      { day:12, grammar:"Restaurant", topic:"رستوران", vocab:["Menu","Order","Bill","Waiter","Table","Fork","Knife","Spoon","Cup","Plate"] },
+      { day:13, grammar:"Daily Routine", topic:"روال روزانه", vocab:["Wake up","Get dressed","Eat breakfast","Go to work","Study","Have lunch","Come home","Dinner","Watch TV","Sleep"] },
+      { day:14, grammar:"Review", topic:"مرور هفته دوم", vocab:["Review week 2","Practice","Grammar","Vocabulary","Speaking","Listening","Writing","Reading","Quiz","Progress"] },
+      // week 3
+      { day:15, grammar:"Past Simple", topic:"گذشته ساده", vocab:["Yesterday","Last week","Ago","Did","Was","Were","Had","Went","Saw","Made"] },
+      { day:16, grammar:"Travel", topic:"سفر", vocab:["Trip","Flight","Train","Bus","Ticket","Suitcase","Hotel","Beach","Mountain","City"] },
+      { day:17, grammar:"Transportation", topic:"حمل و نقل", vocab:["Car","Bicycle","Subway","Taxi","Walk","Drive","Ride","Catch","Traffic","Map"] },
+      { day:18, grammar:"Feelings", topic:"احساسات", vocab:["Happy","Sad","Angry","Tired","Excited","Bored","Surprised","Scared","Worried","Calm"] },
+      { day:19, grammar:"Weather", topic:"آب و هوا", vocab:["Sunny","Rainy","Cloudy","Windy","Snowy","Hot","Cold","Warm","Cool","Foggy"] },
+      { day:20, grammar:"Common Expressions", topic:"اصطلاحات روزمره", vocab:["Excuse me","I'm sorry","Thank you","You're welcome","Please","Of course","Maybe","Sure","No problem","Take care"] },
+      { day:21, grammar:"Review & Quiz", topic:"مرور و آزمون", vocab:["Review","Quiz","Test","Grammar","Vocabulary","Speaking","Listening","Writing","Score","Finish"] },
+      // week 4
+      { day:22, grammar:"Future (Going To)", topic:"آینده با going to", vocab:["Tomorrow","Next week","Soon","Plan","Will","Going to","Future","Hope","Think","Maybe"] },
+      { day:23, grammar:"Conversation", topic:"مکالمه", vocab:["Talk","Chat","Discuss","Ask","Reply","Tell","Say","Speak","Listen","Understand"] },
+      { day:24, grammar:"Pronunciation", topic:"تلفظ", vocab:["Sound","Stress","Intonation","Accent","Listen","Repeat","Practice","Speak slowly","Record","Improve"] },
+      { day:25, grammar:"Listening Practice", topic:"تمرین شنیداری", vocab:["Hear","Listen","Audio","Video","Podcast","Song","Story","News","Dialogue","Repeat"] },
+      { day:26, grammar:"Review", topic:"مرور هفته چهارم", vocab:["Review","Practice","Grammar","Vocabulary","Speaking","Listening","Writing","Reading","Quiz","Progress"] },
+      { day:27, grammar:"Mock Test", topic:"آزمون شبیه‌سازی", vocab:["Mock","Test","Exam","Questions","Answers","Time","Score","Pass","Fail","Review"] },
+      { day:28, grammar:"Final Exam", topic:"آزمون نهایی", vocab:["Final","Exam","Grammar","Vocabulary","Speaking","Listening","Writing","Reading","Score","Certificate"] },
+      { day:29, grammar:"Graduation", topic:"فارغ‌التحصیلی", vocab:["Graduate","Certificate","Finish","Complete","Success","Proud","Celebrate","Future","Goal","Achievement"] },
+      { day:30, grammar:"Review & Celebration", topic:"جشن و مرور", vocab:["Celebration","Finish","Complete","Goal","Achievement","Proud","Future","Next level","Keep going","Success"] }
+    ];
+
+    // ===== STATE =====
+    let state = {
+      currentDay: 1,
+      completedDays: 0,
+      streak: 0,
+      maxStreak: 0,
+      xp: 0,
+      level: 1,
+      studyTime: 0,
+      progress: 0,
+      vocabMastered: [],
+      tasks: {},
+      notes: {},
+      scores: {},
+      achievements: [],
+      lastVisit: Date.now(),
+      dailyQuotes: ["Practice makes perfect.", "Every day is a new chance.", "You are improving!", "Stay consistent.", "Believe in yourself."],
+      tips: ["Watch Friends with subtitles.", "Shadow native speakers.", "Learn 5 words daily.", "Speak out loud.", "Use new words in sentences."]
+    };
+
+    // ===== HELPERS =====
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function pick(arr){ return arr[rand(0,arr.length-1)]; }
+
+    // ===== STORAGE =====
+    function saveState(){
+      try { localStorage.setItem('engMasterState', JSON.stringify(state)); } catch(e){}
+    }
+    function loadState(){
+      try {
+        const raw = localStorage.getItem('engMasterState');
+        if(raw) {
+          const parsed = JSON.parse(raw);
+          Object.assign(state, parsed);
+          // ensure tasks/notes exist for all days
+          for(let i=1;i<=30;i++){
+            if(!state.tasks[i]) state.tasks[i] = {};
+            if(!state.notes[i]) state.notes[i] = '';
+          }
+        }
+      } catch(e){}
+    }
+
+    // ===== COMPUTED =====
+    function getTodayLesson(){ return CURRICULUM[state.currentDay-1] || CURRICULUM[0]; }
+    function getCompletedDays(){ 
+      let count=0;
+      for(let i=1;i<=30;i++){
+        const t = state.tasks[i];
+        if(t && t._allDone) count++;
+      }
+      return count;
+    }
+    function calcProgress(){
+      const done = getCompletedDays();
+      return Math.min(100, Math.round((done/30)*100));
+    }
+    function updateStats(){
+      state.completedDays = getCompletedDays();
+      state.remainingDays = 30 - state.completedDays;
+      state.progress = calcProgress();
+      // streak
+      let s=0, maxS=0;
+      for(let i=1;i<=30;i++){
+        if(state.tasks[i] && state.tasks[i]._allDone){ s++; if(s>maxS) maxS=s; }
+        else s=0;
+      }
+      state.streak = s;
+      if(maxS>state.maxStreak) state.maxStreak = maxS;
+      // vocab count
+      state.vocabCount = state.vocabMastered ? state.vocabMastered.length : 0;
+      // xp level
+      state.level = Math.floor(state.xp / 100) + 1;
+      saveState();
+    }
+
+    // ===== RENDER =====
+    function render(){
+      const today = getTodayLesson();
+      document.querySelectorAll('[v-text]').forEach(el => {
+        const key = el.getAttribute('v-text');
+        let val = state[key];
+        if(key === 'currentDay') val = state.currentDay;
+        else if(key === 'remainingDays') val = 30 - state.completedDays;
+        else if(key === 'todayTopic') val = today.topic;
+        else if(key === 'todayGrammar') val = today.grammar;
+        else if(key === 'quote') val = pick(state.dailyQuotes);
+        else if(key === 'tip') val = pick(state.tips);
+        else if(key === 'vocabCount') val = state.vocabMastered ? state.vocabMastered.length : 0;
+        else if(key === 'avgScore') val = 75; // placeholder
+        else if(key === 'maxStreak') val = state.maxStreak;
+        el.textContent = val;
+      });
+      // ring
+      const ring = document.querySelector('.ring-progress');
+      if(ring) {
+        const p = state.progress;
+        const dash = 301.6 * (1 - p/100);
+        ring.setAttribute('stroke-dashoffset', dash);
+      }
+      // achievements
+      const achContainer = document.querySelector('[v-ach]');
+      if(achContainer) {
+        const achList = [];
+        if(state.completedDays>=1) achList.push('اولین درس');
+        if(state.completedDays>=3) achList.push('۳ روز');
+        if(state.completedDays>=7) achList.push('۷ روز');
+        if(state.completedDays>=14) achList.push('۱۴ روز');
+        if(state.completedDays>=30) achList.push('۳۰ روز');
+        if(state.vocabMastered && state.vocabMastered.length>=100) achList.push('۱۰۰ واژه');
+        if(state.vocabMastered && state.vocabMastered.length>=300) achList.push('۳۰۰ واژه');
+        if(state.streak>=7) achList.push('هفته عالی');
+        if(state.completedDays===30) achList.push('ماه عالی');
+        state.achievements = achList;
+        achContainer.innerHTML = achList.map(a => `<span class="glass-badge" style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.2);">${a}</span>`).join('');
+      }
+      // render lessons
+      renderLessons();
+      // render vocab
+      renderVocab();
+      // notes
+      const noteEl = document.getElementById('dailyNotes');
+      if(noteEl && state.notes[state.currentDay]!==undefined) {
+        noteEl.value = state.notes[state.currentDay] || '';
+        document.getElementById('charCount').textContent = noteEl.value.length + ' کاراکتر';
+      }
+      // gemini prompt
+      const geminiEl = document.querySelector('[v-gemini]');
+      if(geminiEl) {
+        const t = getTodayLesson();
+        geminiEl.textContent = `I am an A1 English learner. Today's lesson: ${t.grammar} - ${t.topic}. Teach me step by step. Explain slowly. Correct every mistake. Ask me questions. Do not move to the next topic until I understand. At the end give me: 10 vocabulary, 10 sentences, Quiz, Speaking practice, Homework.`;
+      }
+      // chart
+      drawChart();
+      // save
+      saveState();
+    }
+
+    // ===== LESSONS =====
+    function renderLessons(){
+      const container = document.getElementById('lessonList');
+      if(!container) return;
+      const search = document.getElementById('searchLesson')?.value?.toLowerCase() || '';
+      let html = '';
+      CURRICULUM.forEach((l, idx) => {
+        const day = idx+1;
+        const done = state.tasks[day] && state.tasks[day]._allDone;
+        const match = l.grammar.toLowerCase().includes(search) || l.topic.toLowerCase().includes(search);
+        if(!match) return;
+        const tasks = state.tasks[day] || {};
+        const checked = (key) => tasks[key] ? 'checked' : '';
+        html += `<div class="lesson-item" onclick="toggleLesson(${day})">
+          <div class="flex-between"><span class="day">روز ${day}</span> <span>${done ? '✅' : '⬜'}</span></div>
+          <div><span class="topic">${l.grammar}</span> • ${l.topic}</div>
+          <div class="lesson-detail" id="detail-${day}">
+            <div class="task-grid">
+              ${['studyGrammar','learnWords','speaking','watchFriends','listen','shadow','review','homework','writeSentences','takeNotes'].map(k => 
+                `<label><input type="checkbox" ${checked(k)} onchange="toggleTask(${day},'${k}')"> ${k.replace(/([A-Z])/g,' $1')}</label>`
+              ).join('')}
+            </div>
+            <div style="margin-top:8px;"><button class="btn btn-sm btn-primary" onclick="completeDay(${day})">✅ تکمیل روز</button></div>
+          </div>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function toggleLesson(day){
+      const el = document.getElementById('detail-'+day);
+      if(el) el.classList.toggle('open');
+    }
+    function toggleTask(day, key){
+      if(!state.tasks[day]) state.tasks[day] = {};
+      state.tasks[day][key] = !state.tasks[day][key];
+      // check all done
+      const t = state.tasks[day];
+      const all = ['studyGrammar','learnWords','speaking','watchFriends','listen','shadow','review','homework','writeSentences','takeNotes'];
+      let allDone = true;
+      for(let a of all) if(!t[a]) { allDone=false; break; }
+      t._allDone = allDone;
+      if(allDone && !state.scores[day]) {
+        state.scores[day] = 100;
+        state.xp += 80;
+      }
+      updateStats();
+      render();
+    }
+    function completeDay(day){
+      const t = state.tasks[day];
+      if(!t) return;
+      const all = ['studyGrammar','learnWords','speaking','watchFriends','listen','shadow','review','homework','writeSentences','takeNotes'];
+      let allDone = true;
+      for(let a of all) if(!t[a]) { allDone=false; break; }
+      if(allDone){
+        if(!state.scores[day]) { state.scores[day]=100; state.xp+=50; }
+        t._allDone = true;
+        updateStats();
+        render();
+        if(day===30) alert('🎉 تبریک! شما ۳۰ روز را کامل کردید!');
+        else alert(`✅ روز ${day} تکمیل شد!`);
+      } else {
+        alert('⚠️ همه تسک‌ها را انجام دهید.');
+      }
+    }
+    function continueLearning(){
+      const day = state.currentDay;
+      const el = document.getElementById('detail-'+day);
+      if(el) el.classList.toggle('open');
+      window.scrollTo({top: document.getElementById('lessonList').offsetTop-40, behavior:'smooth'});
+    }
+    function filterLessons(){ renderLessons(); }
+
+    // ===== VOCAB =====
+    function renderVocab(){
+      const container = document.getElementById('vocabGrid');
+      if(!container) return;
+      const search = document.getElementById('searchVocab')?.value?.toLowerCase() || '';
+      const lesson = getTodayLesson();
+      const vocab = lesson.vocab || [];
+      let html = '';
+      vocab.forEach((word, idx) => {
+        if(!word.toLowerCase().includes(search)) return;
+        const mastered = state.vocabMastered && state.vocabMastered.includes(word+'_'+state.currentDay);
+        html += `<div class="vocab-card"><div class="en">${word}</div><div class="fa">معنی</div><label style="font-size:0.8rem;"><input type="checkbox" ${mastered?'checked':''} onchange="toggleVocab('${word}',${state.currentDay})"> مسلط شدم</label></div>`;
+      });
+      container.innerHTML = html || '<p style="color:#6a7a8a;">واژه‌ای یافت نشد</p>';
+    }
+    function toggleVocab(word, day){
+      const key = word+'_'+day;
+      if(!state.vocabMastered) state.vocabMastered = [];
+      const idx = state.vocabMastered.indexOf(key);
+      if(idx>-1) state.vocabMastered.splice(idx,1);
+      else { state.vocabMastered.push(key); state.xp += 10; }
+      updateStats();
+      render();
+    }
+    function filterVocab(){ renderVocab(); }
+
+    // ===== NOTES =====
+    function saveNote(){
+      const el = document.getElementById('dailyNotes');
+      if(el) {
+        state.notes[state.currentDay] = el.value;
+        document.getElementById('charCount').textContent = el.value.length + ' کاراکتر';
+        saveState();
+      }
+    }
+
+    // ===== GEMINI =====
+    function copyGeminiPrompt(){
+      const el = document.querySelector('[v-gemini]');
+      if(el) {
+        navigator.clipboard?.writeText(el.textContent).then(()=>alert('✅ پرامپت کپی شد!'));
+      }
+    }
+
+    // ===== CHART (Canvas) =====
+    function drawChart(){
+      const canvas = document.getElementById('statsChart');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const data = [];
+      for(let i=1;i<=30;i++) {
+        data.push(state.scores[i] || 0);
+      }
+      ctx.fillStyle = '#3b82f6';
+      const barW = w/30 - 2;
+      for(let i=0;i<30;i++) {
+        const val = data[i];
+        const x = i*(barW+2)+1;
+        const barH = (val/100) * h;
+        ctx.fillRect(x, h-barH, barW, barH);
+      }
+    }
+
+    // ===== SETTINGS =====
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'english_master_backup.json';
+      a.click();
+    }
+    function importData(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          Object.assign(state, data);
+          saveState();
+          render();
+          alert('✅ داده‌ها وارد شدند.');
+        } catch(err){ alert('❌ خطا در وارد کردن'); }
+      };
+      reader.readAsText(file);
+    }
+    function resetProgress(){
+      if(confirm('آیا پیشرفت ریست شود؟')) {
+        state.tasks = {};
+        state.scores = {};
+        state.vocabMastered = [];
+        state.xp = 0;
+        state.streak = 0;
+        state.completedDays = 0;
+        for(let i=1;i<=30;i++) state.tasks[i] = {};
+        saveState();
+        render();
+      }
+    }
+    function resetNotes(){
+      if(confirm('یادداشت‌ها پاک شوند؟')) {
+        state.notes = {};
+        for(let i=1;i<=30;i++) state.notes[i] = '';
+        saveState();
+        render();
+      }
+    }
+
+    // ===== INIT =====
+    loadState();
+    // ensure tasks & notes
+    for(let i=1;i<=30;i++){ if(!state.tasks[i]) state.tasks[i]={}; if(!state.notes[i]) state.notes[i]=''; }
+    updateStats();
+    // bind to window
+    window.toggleLesson = toggleLesson;
+    window.toggleTask = toggleTask;
+    window.completeDay = completeDay;
+    window.continueLearning = continueLearning;
+    window.filterLessons = filterLessons;
+    window.filterVocab = filterVocab;
+    window.toggleVocab = toggleVocab;
+    window.saveNote = saveNote;
+    window.copyGeminiPrompt = copyGeminiPrompt;
+    window.exportData = exportData;
+    window.importData = importData;
+    window.resetProgress = resetProgress;
+    window.resetNotes = resetNotes;
+    // render
+    render();
+    // periodic save
+    setInterval(saveState, 10000);
+  })();
+</script>
+</body>
+</html>
