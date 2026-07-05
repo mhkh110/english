@@ -1,255 +1,100 @@
 /* ============================================
-   ENGLISH MASTER – MAIN APPLICATION SCRIPT
-   Vanilla JS | Modular | LocalStorage Powered
-   No external libraries. Fully offline.
+   ENGLISH MASTER – نسخه نهایی
    ============================================ */
 
-// ---------- CONSTANTS ----------
 const TOTAL_DAYS = 30;
-const STORAGE_KEYS = {
+const STORAGE = {
   LESSONS: 'em_lessons',
   NOTES: 'em_notes',
   XP: 'em_xp',
-  CURRENT_DAY: 'em_currentDay',
+  DAY: 'em_day',
   STREAK: 'em_streak',
-  COMPLETED_COUNT: 'em_completedCount',
-  VOCAB_MASTERED: 'em_vocabMastered',
-  CHECKLISTS: 'em_checklists',
-  SETTINGS: 'em_settings'
+  COMPLETED: 'em_completed',
+  VOCAB: 'em_vocab',
+  CHECKLISTS: 'em_checklists'
 };
 
-const XP_REWARDS = {
-  grammar: 20,
-  vocabulary: 20,
-  speaking: 20,
-  listening: 20,
-  homework: 20,
-  review: 10
-};
+const XP_REWARDS = { grammar: 20, vocabulary: 20, speaking: 20, listening: 20, homework: 20, review: 10 };
 
-// ---------- 30-DAY COURSE DATA (A1+ → A2) ----------
-const COURSE_DATA = [
-  {
-    day: 1,
-    title: 'Present Simple - حال ساده',
-    description: 'یادگیری زمان حال ساده برای بیان عادت‌ها و حقایق',
-    grammar: {
-      english: 'Present Simple is used for habits, routines, and general truths.\n\nStructure:\n• Positive: Subject + base verb (+ s/es for he/she/it)\n• Negative: Subject + do/does + not + base verb\n• Question: Do/Does + subject + base verb?',
-      persian: 'زمان حال ساده برای بیان عادت‌ها، کارهای روزمره و حقایق کلی استفاده می‌شود.\n\nساختار:\n• مثبت: فاعل + شکل ساده فعل (برای he/she/it فعل s یا es می‌گیرد)\n• منفی: فاعل + do/does + not + شکل ساده فعل\n• سوالی: Do/Does + فاعل + شکل ساده فعل',
-      examples: ['I go to school every day.', 'She works in a hospital.', 'They don\'t like coffee.', 'Does he speak English?'],
-      mistakes: ['He go (اشتباه) → He goes (درست)', 'She don\'t (اشتباه) → She doesn\'t (درست)']
-    },
-    vocabulary: [
-      { word: 'always', meaning: 'همیشه', pronunciation: '/ˈɔːlweɪz/', sentence: 'I always wake up early.' },
-      { word: 'usually', meaning: 'معمولاً', pronunciation: '/ˈjuːʒuəli/', sentence: 'She usually drinks tea.' },
-      { word: 'sometimes', meaning: 'بعضی وقت‌ها', pronunciation: '/ˈsʌmtaɪmz/', sentence: 'We sometimes go to the park.' },
-      { word: 'never', meaning: 'هرگز', pronunciation: '/ˈnevər/', sentence: 'He never eats meat.' },
-      { word: 'every day', meaning: 'هر روز', pronunciation: '/ˈevri deɪ/', sentence: 'I study English every day.' },
-      { word: 'morning', meaning: 'صبح', pronunciation: '/ˈmɔːrnɪŋ/', sentence: 'She runs in the morning.' },
-      { word: 'night', meaning: 'شب', pronunciation: '/naɪt/', sentence: 'They watch TV at night.' },
-      { word: 'work', meaning: 'کار کردن', pronunciation: '/wɜːrk/', sentence: 'He works in an office.' },
-      { word: 'live', meaning: 'زندگی کردن', pronunciation: '/lɪv/', sentence: 'We live in Tehran.' },
-      { word: 'like', meaning: 'دوست داشتن', pronunciation: '/laɪk/', sentence: 'Do you like pizza?' }
-    ],
-    listening: { instruction: 'به فایل صوتی گوش دهید و جاهای خالی را پر کنید.', exercise: 'She ___ (work/works) in a big company.' },
-    speaking: 'خودت را با ۵ جمله با استفاده از Present Simple معرفی کن. بگو اهل کجایی، چه کار می‌کنی و چه چیزهایی دوست داری.',
-    writing: 'یک پاراگراف درباره برنامه روزانه‌ات بنویس. (حداقل ۵ جمله)',
-    friends: { episode: 'S01E01 - The Pilot', scene: 'Central Perk - Rachel enters', expressions: ['There\'s nothing to tell!', 'I just grabbed a spoon.', 'You wanna get some coffee?'] },
-    usefulExpressions: ['How are you doing?', 'What do you do?', 'I usually get up at...', 'Nice to meet you.'],
-    geminiPrompt: 'Explain Present Simple tense in English with 10 clear examples. Include positive, negative, and question forms. Add common mistakes that Persian speakers make.',
-    homework: '۱۰ جمله با Present Simple بنویس (۳ مثبت، ۳ منفی، ۴ سوالی) و با صدای بلند بخوان.'
-  },
-  {
-    day: 2,
-    title: 'Present Continuous - حال استمراری',
-    description: 'یادگیری زمان حال استمراری برای بیان کارهای در حال انجام',
-    grammar: {
-      english: 'Present Continuous is used for actions happening now or around now.\n\nStructure:\n• Positive: Subject + am/is/are + verb + ing\n• Negative: Subject + am/is/are + not + verb + ing\n• Question: Am/Is/Are + subject + verb + ing?',
-      persian: 'زمان حال استمراری برای کارهایی که همین الان در حال انجام هستند استفاده می‌شود.\n\nساختار:\n• مثبت: فاعل + am/is/are + فعل + ing\n• منفی: فاعل + am/is/are + not + فعل + ing\n• سوالی: Am/Is/Are + فاعل + فعل + ing',
-      examples: ['I am studying English now.', 'She is watching TV.', 'They are not sleeping.', 'Are you listening to me?'],
-      mistakes: ['I am go (اشتباه) → I am going (درست)', 'She speaking (اشتباه) → She is speaking (درست)']
-    },
-    vocabulary: [
-      { word: 'now', meaning: 'الان', pronunciation: '/naʊ/', sentence: 'I am reading now.' },
-      { word: 'right now', meaning: 'همین الان', pronunciation: '/raɪt naʊ/', sentence: 'She is cooking right now.' },
-      { word: 'at the moment', meaning: 'در این لحظه', pronunciation: '/æt ðə ˈmoʊmənt/', sentence: 'He is sleeping at the moment.' },
-      { word: 'currently', meaning: 'در حال حاضر', pronunciation: '/ˈkɜːrəntli/', sentence: 'We are currently studying.' },
-      { word: 'still', meaning: 'هنوز', pronunciation: '/stɪl/', sentence: 'Are you still working?' },
-      { word: 'watching', meaning: 'تماشا کردن', pronunciation: '/ˈwɒtʃɪŋ/', sentence: 'I am watching a movie.' },
-      { word: 'listening', meaning: 'گوش دادن', pronunciation: '/ˈlɪsənɪŋ/', sentence: 'She is listening to music.' },
-      { word: 'talking', meaning: 'صحبت کردن', pronunciation: '/ˈtɔːkɪŋ/', sentence: 'They are talking on the phone.' },
-      { word: 'waiting', meaning: 'منتظر بودن', pronunciation: '/ˈweɪtɪŋ/', sentence: 'I am waiting for you.' },
-      { word: 'coming', meaning: 'آمدن', pronunciation: '/ˈkʌmɪŋ/', sentence: 'The bus is coming.' }
-    ],
-    listening: { instruction: 'به مکالمه گوش دهید و پاسخ صحیح را انتخاب کنید.', exercise: 'What ___ (is/are) you doing right now?' },
-    speaking: 'به اطرافت نگاه کن و ۵ جمله با Present Continuous بگو که الان چه اتفاقی در حال رخ دادن است.',
-    writing: 'تصور کن در یک کافی شاپ هستی. یک پاراگراف بنویس که افراد مختلف چه کار می‌کنند.',
-    friends: { episode: 'S01E01 - The Pilot', scene: 'Ross is depressed about his divorce', expressions: ['I\'m just trying to...', 'What are you doing?', 'He\'s not wearing any underwear!'] },
-    usefulExpressions: ['What are you doing?', 'I\'m just looking.', 'Are you coming?', 'Wait a minute.'],
-    geminiPrompt: 'Explain Present Continuous tense with examples. Compare it with Present Simple and explain when to use each one. Include exercises.',
-    homework: '۵ جمله با Present Simple و ۵ جمله با Present Continuous بنویس و تفاوت آنها را توضیح بده.'
-  },
-  {
-    day: 3,
-    title: 'Past Simple - گذشته ساده (افعال باقاعده)',
-    description: 'یادگیری زمان گذشته ساده با افعال باقاعده',
-    grammar: {
-      english: 'Past Simple is used for completed actions in the past.\n\nRegular verbs add -ed.\n• Positive: Subject + verb + ed\n• Negative: Subject + did not + base verb\n• Question: Did + subject + base verb?',
-      persian: 'زمان گذشته ساده برای کارهای تمام شده در گذشته استفاده می‌شود.\n\nافعال باقاعده ed می‌گیرند.\n• مثبت: فاعل + فعل + ed\n• منفی: فاعل + did not + شکل ساده فعل\n• سوالی: Did + فاعل + شکل ساده فعل',
-      examples: ['I worked yesterday.', 'She played tennis.', 'They did not watch TV.', 'Did you study English?'],
-      mistakes: ['I did went (اشتباه) → I went / I did go (درست)', 'She workded (اشتباه) → She worked (درست)']
-    },
-    vocabulary: [
-      { word: 'yesterday', meaning: 'دیروز', pronunciation: '/ˈjestərdeɪ/', sentence: 'I visited my friend yesterday.' },
-      { word: 'last week', meaning: 'هفته گذشته', pronunciation: '/læst wiːk/', sentence: 'We traveled last week.' },
-      { word: 'ago', meaning: 'پیش', pronunciation: '/əˈɡoʊ/', sentence: 'I saw him two days ago.' },
-      { word: 'worked', meaning: 'کار کرد', pronunciation: '/wɜːrkt/', sentence: 'He worked hard.' },
-      { word: 'played', meaning: 'بازی کرد', pronunciation: '/pleɪd/', sentence: 'They played football.' },
-      { word: 'studied', meaning: 'درس خواند', pronunciation: '/ˈstʌdid/', sentence: 'I studied for the exam.' },
-      { word: 'visited', meaning: 'بازدید کرد', pronunciation: '/ˈvɪzɪtɪd/', sentence: 'She visited her family.' },
-      { word: 'watched', meaning: 'تماشا کرد', pronunciation: '/wɒtʃt/', sentence: 'We watched a movie.' },
-      { word: 'cleaned', meaning: 'تمیز کرد', pronunciation: '/kliːnd/', sentence: 'I cleaned my room.' },
-      { word: 'cooked', meaning: 'پخت / آشپزی کرد', pronunciation: '/kʊkt/', sentence: 'She cooked dinner.' }
-    ],
-    listening: { instruction: 'به داستان کوتاه گوش دهید و به سوالات پاسخ دهید.', exercise: 'Yesterday, I ___ (walk/walked) to the park.' },
-    speaking: 'درباره دیروزت صحبت کن. ۵ جمله با Past Simple بگو که دیروز چه کارهایی کردی.',
-    writing: 'یک خاطره کوتاه از آخرین مسافرتت بنویس. از Past Simple استفاده کن.',
-    friends: { episode: 'S01E02 - The One with the Sonogram', scene: 'Ross finds out about the baby', expressions: ['I just thought...', 'We were on a break!', 'Did you know about this?'] },
-    usefulExpressions: ['What happened?', 'I didn\'t know.', 'Did you see that?', 'A long time ago.'],
-    geminiPrompt: 'Teach Past Simple tense with regular verbs. Include spelling rules for -ed endings (e.g., studied, stopped, played). Give practice exercises.',
-    homework: '۱۰ جمله با Past Simple بنویس (۵ تا با افعال باقاعده که یاد گرفتی).'
-  },
-  {
-    day: 4,
-    title: 'Past Simple - گذشته ساده (افعال بی‌قاعده)',
-    description: 'یادگیری افعال بی‌قاعده در زمان گذشته ساده',
-    grammar: {
-      english: 'Irregular verbs do NOT follow the -ed rule. Each verb has its own past form.\nCommon irregular verbs: go → went, have → had, do → did, see → saw, eat → ate, buy → bought, come → came, get → got.',
-      persian: 'افعال بی‌قاعده از قانون ed پیروی نمی‌کنند. هر فعل شکل گذشته مخصوص به خود را دارد.\nافعال رایج: go → went, have → had, do → did, see → saw, eat → ate, buy → bought, come → came, get → got.',
-      examples: ['I went to the cinema.', 'She had a great time.', 'They did their homework.', 'Did you see the news?'],
-      mistakes: ['I goed (اشتباه) → I went (درست)', 'She haved (اشتباه) → She had (درست)']
-    },
-    vocabulary: [
-      { word: 'went', meaning: 'رفت', pronunciation: '/went/', sentence: 'I went to the store.' },
-      { word: 'had', meaning: 'داشت', pronunciation: '/hæd/', sentence: 'She had a good idea.' },
-      { word: 'did', meaning: 'انجام داد', pronunciation: '/dɪd/', sentence: 'He did his best.' },
-      { word: 'saw', meaning: 'دید', pronunciation: '/sɔː/', sentence: 'I saw a beautiful bird.' },
-      { word: 'ate', meaning: 'خورد', pronunciation: '/eɪt/', sentence: 'We ate lunch together.' },
-      { word: 'bought', meaning: 'خرید', pronunciation: '/bɔːt/', sentence: 'She bought a new dress.' },
-      { word: 'came', meaning: 'آمد', pronunciation: '/keɪm/', sentence: 'He came home late.' },
-      { word: 'got', meaning: 'گرفت / شد', pronunciation: '/ɡɒt/', sentence: 'I got a letter.' },
-      { word: 'made', meaning: 'درست کرد', pronunciation: '/meɪd/', sentence: 'She made a cake.' },
-      { word: 'took', meaning: 'برداشت / گرفت', pronunciation: '/tʊk/', sentence: 'He took a photo.' }
-    ],
-    listening: { instruction: 'به داستان گوش دهید و افعال بی‌قاعده را یادداشت کنید.', exercise: 'Yesterday I ___ (go/went) to the market and ___ (buy/bought) some fruit.' },
-    speaking: 'با ۵ فعل بی‌قاعده جمله بساز و با صدای بلند بگو.',
-    writing: 'دفترچه خاطرات: دیروز چه کارهای جالبی کردی؟ از حداقل ۸ فعل بی‌قاعده استفاده کن.',
-    friends: { episode: 'S01E03 - The One with the Thumb', scene: 'Phoebe gets money from the bank', expressions: ['I got a job!', 'She gave me...', 'They went to...'] },
-    usefulExpressions: ['I went to...', 'I had a...', 'Did you get it?', 'I saw that!'],
-    geminiPrompt: 'Create a list of the 30 most common irregular verbs in English with their past forms. Provide example sentences and a short quiz.',
-    homework: '۲۰ فعل بی‌قاعده مهم را حفظ کن و با هر کدام یک جمله بنویس.'
-  },
-  {
-    day: 5,
-    title: 'There is / There are - وجود داشتن',
-    description: 'یادگیری ساختار There is و There are',
-    grammar: {
-      english: 'We use "There is" for singular nouns and "There are" for plural nouns.\n• Positive: There is a book. / There are two books.\n• Negative: There isn\'t a pen. / There aren\'t any pens.\n• Question: Is there a bank? / Are there any shops?',
-      persian: 'از There is برای اسم مفرد و از There are برای اسم جمع استفاده می‌کنیم.\n• مثبت: There is a book. (یک کتاب وجود دارد)\n• منفی: There isn\'t a pen.\n• سوالی: Is there a bank?',
-      examples: ['There is a cat in the garden.', 'There are three chairs.', 'There isn\'t any milk.', 'Are there any questions?'],
-      mistakes: ['There is two cats (اشتباه) → There are two cats (درست)', 'There aren\'t a pen (اشتباه) → There isn\'t a pen (درست)']
-    },
-    vocabulary: [
-      { word: 'room', meaning: 'اتاق', pronunciation: '/ruːm/', sentence: 'There is a bed in the room.' },
-      { word: 'kitchen', meaning: 'آشپزخانه', pronunciation: '/ˈkɪtʃɪn/', sentence: 'There are dishes in the kitchen.' },
-      { word: 'bathroom', meaning: 'حمام', pronunciation: '/ˈbæθruːm/', sentence: 'There is a mirror in the bathroom.' },
-      { word: 'garden', meaning: 'باغچه', pronunciation: '/ˈɡɑːrdn/', sentence: 'There are flowers in the garden.' },
-      { word: 'window', meaning: 'پنجره', pronunciation: '/ˈwɪndoʊ/', sentence: 'There is a big window.' },
-      { word: 'door', meaning: 'در', pronunciation: '/dɔːr/', sentence: 'There are two doors.' },
-      { word: 'fridge', meaning: 'یخچال', pronunciation: '/frɪdʒ/', sentence: 'There is food in the fridge.' },
-      { word: 'shelf', meaning: 'قفسه', pronunciation: '/ʃelf/', sentence: 'There are books on the shelf.' },
-      { word: 'lamp', meaning: 'لامپ', pronunciation: '/læmp/', sentence: 'There is a lamp on the desk.' },
-      { word: 'carpet', meaning: 'فرش', pronunciation: '/ˈkɑːrpɪt/', sentence: 'There is a carpet on the floor.' }
-    ],
-    listening: { instruction: 'به توضیحات یک خانه گوش دهید و نقشه آن را بکشید.', exercise: 'In my room, ___ a bed and ___ two chairs. (is/are)' },
-    speaking: 'اتاق خودت را توصیف کن. بگو چه چیزهایی در اتاقت وجود دارد. (حداقل ۸ جمله)',
-    writing: 'خانه رویایی‌ات را توصیف کن. از There is و There are استفاده کن.',
-    friends: { episode: 'S01E04 - The One with George Stephanopoulos', scene: 'The girls spy on the neighbors', expressions: ['There is a guy...', 'Are there any...?', 'There\'s nothing to see!'] },
-    usefulExpressions: ['There is a...', 'There are some...', 'Is there a...?', 'There isn\'t any...'],
-    geminiPrompt: 'Teach "There is" and "There are" with clear rules and 20 fill-in-the-blank exercises. Include answers.',
-    homework: '۱۰ جمله با There is و ۱۰ جمله با There are بنویس و اتاقت را کامل توصیف کن.'
-  }
-];
-
-// ادامه داده‌های درس ۶ تا ۳۰ به صورت فشرده (هر درس کامل خواهد بود)
-// Generating remaining 25 lessons programmatically with progressive difficulty
-function generateRemainingLessons() {
+// ==================== داده دوره ====================
+function getCourseData() {
   const grammarTopics = [
-    { title: 'Countable & Uncountable Nouns', desc: 'یادگیری اسامی قابل شمارش و غیرقابل شمارش', grammar: 'Countable nouns can be counted (apple, chair). Uncountable nouns cannot (water, rice).\nUse a/an with singular countable. Use some/any with uncountable.' },
-    { title: 'Articles: A, An, The', desc: 'یادگیری حروف تعریف در انگلیسی', grammar: 'A/An for singular general. The for specific things. No article for plural general.' },
-    { title: 'Prepositions of Place', desc: 'یادگیری حروف اضافه مکان', grammar: 'In, on, at, under, behind, next to, between, in front of.\nIn: inside something. On: on a surface. At: specific point.' },
-    { title: 'Prepositions of Time', desc: 'یادگیری حروف اضافه زمان', grammar: 'At for specific time (at 5pm). On for days (on Monday). In for months/years (in July).' },
-    { title: 'Can & Can\'t - توانایی', desc: 'بیان توانایی و عدم توانایی', grammar: 'Can + base verb. Cannot/Can\'t for negative. Can for permission and ability.' },
-    { title: 'Must & Have to - اجبار', desc: 'بیان اجبار و ضرورت', grammar: 'Must for internal obligation. Have to for external rules. Mustn\'t for prohibition.' },
-    { title: 'Should - توصیه', desc: 'بیان توصیه و پیشنهاد', grammar: 'Should + base verb for advice. Shouldn\'t for negative advice.' },
-    { title: 'Future with Will', desc: 'آینده با Will', grammar: 'Will + base verb for predictions, promises, spontaneous decisions.' },
-    { title: 'Future with Going To', desc: 'آینده با Going To', grammar: 'Be + going to + verb for plans and intentions. For predictions with evidence.' },
-    { title: 'Present Perfect (1)', desc: 'معرفی حال کامل', grammar: 'Have/Has + past participle. For experiences, recent events, unfinished time.' },
-    { title: 'Present Perfect (2)', desc: 'حال کامل با ever/never', grammar: 'Ever in questions. Never in positive sentences. For life experiences.' },
-    { title: 'Present Perfect vs Past Simple', desc: 'تفاوت حال کامل و گذشته ساده', grammar: 'Past Simple: finished time. Present Perfect: connection to now.' },
-    { title: 'Comparatives', desc: 'صفت‌های مقایسه‌ای', grammar: 'Short adj + er. Long adj: more + adj. Irregular: good→better, bad→worse.' },
-    { title: 'Superlatives', desc: 'صفت‌های عالی', grammar: 'Short adj + est. Long adj: most + adj. Irregular: good→best, bad→worst.' },
-    { title: 'Adverbs of Frequency', desc: 'قیدهای تکرار', grammar: 'Always, usually, often, sometimes, rarely, never. Position: before main verb, after be.' },
-    { title: 'First Conditional', desc: 'شرطی نوع اول', grammar: 'If + present simple, will + base verb. For real/possible situations.' },
-    { title: 'Second Conditional', desc: 'شرطی نوع دوم', grammar: 'If + past simple, would + base verb. For unreal/imaginary situations.' },
-    { title: 'Gerunds', desc: 'اسم مصدرها', grammar: 'Verb + ing as a noun. After prepositions. After certain verbs (enjoy, finish).' },
-    { title: 'Infinitives', desc: 'مصدر با to', grammar: 'To + base verb. After certain verbs (want, need, hope). Purpose: I went to buy.' },
-    { title: 'Relative Clauses', desc: 'جمله‌های وصفی', grammar: 'Who for people. Which for things. That for both. Where for places.' },
-    { title: 'Passive Voice (Present)', desc: 'مجهول حال ساده', grammar: 'am/is/are + past participle. Focus on action, not doer.' },
-    { title: 'Used To', desc: 'عادت‌های گذشته', grammar: 'Used to + base verb for past habits that don\'t happen now.' },
-    { title: 'Tag Questions', desc: 'سوالات ضمیمه', grammar: 'Positive sentence → negative tag. Negative sentence → positive tag.' },
-    { title: 'Reported Speech', desc: 'نقل قول غیرمستقیم', grammar: 'Present → Past. Will → Would. Can → Could. Pronouns change.' },
-    { title: 'Phrasal Verbs', desc: 'افعال چندبخشی', grammar: 'Verb + particle. Common: get up, turn on, look after, give up.' }
+    { title: 'Present Simple', desc: 'حال ساده', g: 'برای عادت‌ها و حقایق\n\n+ فاعل + فعل (he/she/it + s)\n- فاعل + don\'t/doesn\'t + فعل\n? Do/Does + فاعل + فعل', gp: 'برای بیان عادت‌ها، کارهای روزمره و حقایق کلی', ex: ['I go to school.', 'She works hard.', 'They don\'t like it.', 'Does he speak?'], mis: ['He go ❌ → He goes ✅', 'She don\'t ❌ → She doesn\'t ✅'] },
+    { title: 'Present Continuous', desc: 'حال استمراری', g: 'برای کارهای در حال انجام\n\n+ فاعل + am/is/are + فعل ing\n- فاعل + am/is/are + not + فعل ing\n? Am/Is/Are + فاعل + فعل ing', gp: 'برای کارهایی که همین الان در حال انجام هستند', ex: ['I am studying.', 'She is cooking.', 'Are you listening?'], mis: ['I am go ❌ → I am going ✅'] },
+    { title: 'Past Simple (Regular)', desc: 'گذشته ساده با قاعده', g: 'برای کارهای تمام شده در گذشته\n\n+ فاعل + فعل + ed\n- فاعل + didn\'t + فعل\n? Did + فاعل + فعل', gp: 'برای کارهای تمام شده در گذشته - افعال باقاعده ed می‌گیرند', ex: ['I worked yesterday.', 'She played tennis.', 'Did you watch?'], mis: ['I did went ❌ → I went ✅'] },
+    { title: 'Past Simple (Irregular)', desc: 'گذشته ساده بی‌قاعده', g: 'افعال بی‌قاعده شکل گذشته خاص خود را دارند\ngo→went, have→had, do→did, see→saw, eat→ate', gp: 'افعال بی‌قاعده از قانون ed پیروی نمی‌کنند', ex: ['I went home.', 'She had a cat.', 'Did you see?'], mis: ['I goed ❌ → I went ✅'] },
+    { title: 'There is / There are', desc: 'وجود داشتن', g: 'There is + مفرد\nThere are + جمع\n\n? Is there...? / Are there...?', gp: 'برای بیان وجود چیزی در جایی', ex: ['There is a book.', 'There are two cats.', 'Is there a bank?'], mis: ['There is two ❌ → There are two ✅'] },
+    { title: 'Countable & Uncountable', desc: 'قابل شمارش و غیرقابل شمارش', g: 'قابل شمارش: a/an, some, many\nغیرقابل شمارش: some, much\nwater, rice, money, information', gp: 'اسامی قابل شمارش را می‌توان شمرد، غیرقابل شمارش را نه', ex: ['I have an apple.', 'She has some water.', 'How many books?'], mis: ['a water ❌ → some water ✅'] },
+    { title: 'Articles', desc: 'حروف تعریف a/an/the', g: 'a/an: مفرد ناشناس\nthe: مشخص و شناخته شده\nبدون حرف: جمع عمومی', gp: 'a/an برای چیزهای ناشناس، the برای چیزهای مشخص', ex: ['I saw a dog.', 'The dog was big.', 'Dogs are friendly.'], mis: ['The life is beautiful ❌ → Life is beautiful ✅'] },
+    { title: 'Prepositions of Place', desc: 'حروف اضافه مکان', g: 'in, on, at, under, behind, next to, between', gp: 'in: داخل، on: روی سطح، at: در نقطه مشخص', ex: ['The book is on the table.', 'She is at the door.', 'The cat is under the bed.'], mis: ['in the table ❌ → on the table ✅'] },
+    { title: 'Prepositions of Time', desc: 'حروف اضافه زمان', g: 'at: ساعت (at 5)\non: روز (on Monday)\nin: ماه/سال (in July)', gp: 'at برای زمان دقیق، on برای روز، in برای بازه بزرگتر', ex: ['I wake up at 7.', 'She was born in March.', 'See you on Friday.'], mis: ['in Monday ❌ → on Monday ✅'] },
+    { title: 'Can & Can\'t', desc: 'توانستن', g: 'can + فعل: توانایی/اجازه\ncan\'t: ناتوانی/ممنوعیت', gp: 'برای بیان توانایی، اجازه و درخواست مودبانه', ex: ['I can swim.', 'Can I go out?', 'She can\'t drive.'], mis: ['I can to swim ❌ → I can swim ✅'] },
+    { title: 'Must & Have to', desc: 'باید و اجبار', g: 'must: اجبار داخلی\nhave to: اجبار خارجی\nmustn\'t: ممنوعیت', gp: 'must برای قوانین شخصی، have to برای قوانین بیرونی', ex: ['I must study.', 'You have to wear a seatbelt.', 'You mustn\'t smoke here.'], mis: ['I must to go ❌ → I must go ✅'] },
+    { title: 'Should', desc: 'باید (توصیه)', g: 'should + فعل: توصیه\nshouldn\'t: توصیه منفی', gp: 'برای نصیحت و پیشنهاد', ex: ['You should rest.', 'She shouldn\'t eat too much.', 'Should I call him?'], mis: ['You should to go ❌ → You should go ✅'] },
+    { title: 'Future with Will', desc: 'آینده با will', g: 'will + فعل: پیش‌بینی، قول، تصمیم لحظه‌ای', gp: 'برای تصمیمات لحظه‌ای، قول‌ها و پیش‌بینی بدون شواهد', ex: ['I will help you.', 'It will rain tomorrow.', 'Will you come?'], mis: ['I will to go ❌ → I will go ✅'] },
+    { title: 'Future with Going To', desc: 'آینده با going to', g: 'am/is/are + going to + فعل: برنامه/قصد', gp: 'برای برنامه‌های از قبل تعیین شده و پیش‌بینی با شواهد', ex: ['I\'m going to travel.', 'Look! It\'s going to rain.', 'Are you going to eat?'], mis: ['I going to ❌ → I\'m going to ✅'] },
+    { title: 'Present Perfect (1)', desc: 'حال کامل', g: 'have/has + قسمت سوم فعل\nبرای تجربیات و کارهای ناتمام', gp: 'برای اتفاقاتی که در گذشته رخ داده اما اثرش تا حال باقیست', ex: ['I have visited Paris.', 'She has finished her work.', 'Have you ever been to London?'], mis: ['I have went ❌ → I have gone ✅'] },
+    { title: 'Present Perfect (2)', desc: 'حال کامل با ever/never', g: 'ever: هیچوقت (سوالی)\nnever: هرگز (جمله مثبت)\nfor/since: مدت زمان', gp: 'ever برای پرسیدن تجربه، never برای منفی کردن', ex: ['Have you ever tried sushi?', 'I have never been to Japan.', 'She has worked here for 5 years.'], mis: ['I didn\'t never ❌ → I have never ✅'] },
+    { title: 'Past Simple vs Present Perfect', desc: 'تفاوت گذشته ساده و حال کامل', g: 'گذشته ساده: زمان مشخص در گذشته\nحال کامل: ارتباط با حال', gp: 'اگر زمان دقیق دارید گذشته ساده، اگر مهم نیست کی اتفاق افتاده حال کامل', ex: ['I went there yesterday.', 'I have been there.', 'She finished it an hour ago.', 'She has just finished it.'], mis: ['I have seen him yesterday ❌ → I saw him yesterday ✅'] },
+    { title: 'Comparatives', desc: 'صفت‌های مقایسه‌ای', g: 'کوتاه: صفت + er\nبلند: more + صفت\ngood→better, bad→worse', gp: 'برای مقایسه دو چیز یا دو نفر', ex: ['She is taller than me.', 'This is more interesting.', 'My car is better than yours.'], mis: ['more bigger ❌ → bigger ✅'] },
+    { title: 'Superlatives', desc: 'صفت‌های عالی', g: 'کوتاه: the + صفت + est\nبلند: the most + صفت\ngood→best, bad→worst', gp: 'برای بهترین/بیشترین در یک گروه', ex: ['She is the tallest.', 'This is the most beautiful place.', 'He is the best student.'], mis: ['the most best ❌ → the best ✅'] },
+    { title: 'Adverbs of Frequency', desc: 'قیدهای تکرار', g: 'always, usually, often, sometimes, rarely, never\nقبل از فعل اصلی، بعد از to be', gp: 'برای بیان تعداد دفعات انجام کار', ex: ['I always wake up early.', 'She is never late.', 'We sometimes eat out.'], mis: ['I go always ❌ → I always go ✅'] },
+    { title: 'First Conditional', desc: 'شرطی نوع اول', g: 'If + حال ساده, will + فعل\nبرای شرایط واقعی و ممکن', gp: 'اگر شرط محقق شود، نتیجه اتفاق می‌افتد', ex: ['If it rains, I will stay home.', 'If you study, you will pass.', 'She will come if she has time.'], mis: ['If I will go ❌ → If I go ✅'] },
+    { title: 'Second Conditional', desc: 'شرطی نوع دوم', g: 'If + گذشته ساده, would + فعل\nبرای شرایط غیرواقعی و تخیلی', gp: 'برای آرزوها و شرایط غیرممکن در زمان حال', ex: ['If I were rich, I would travel.', 'If she knew, she would tell us.', 'I would buy it if I had money.'], mis: ['If I would be ❌ → If I were ✅'] },
+    { title: 'Gerunds', desc: 'اسم مصدر', g: 'فعل + ing به عنوان اسم\nبعد از enjoy, finish, mind, suggest', gp: 'وقتی فعل نقش اسم بازی می‌کند یا بعد از بعضی افعال خاص', ex: ['I enjoy swimming.', 'Reading is fun.', 'She finished working.'], mis: ['I enjoy to swim ❌ → I enjoy swimming ✅'] },
+    { title: 'Infinitives', desc: 'مصدر با to', g: 'to + فعل\nبعد از want, need, hope, decide\nبرای هدف: I went to buy', gp: 'برای بیان هدف یا بعد از افعال خاص', ex: ['I want to learn.', 'She needs to sleep.', 'He went to buy food.'], mis: ['I want go ❌ → I want to go ✅'] },
+    { title: 'Relative Clauses', desc: 'جمله وصفی', g: 'who: برای انسان\nwhich: برای اشیا\nthat: برای هر دو\nwhere: برای مکان', gp: 'برای اضافه کردن اطلاعات بیشتر به اسم', ex: ['The man who called is my uncle.', 'The book which I read was great.', 'The place where I grew up.'], mis: ['The man which ❌ → The man who ✅'] },
+    { title: 'Passive Voice (Present)', desc: 'مجهول حال', g: 'am/is/are + قسمت سوم فعل\nفاعل مهم نیست، عمل مهم است', gp: 'وقتی کننده کار مهم نیست یا مشخص نیست', ex: ['English is spoken here.', 'The cake was made by my mom.', 'Mistakes were made.'], mis: ['The cake made ❌ → The cake was made ✅'] },
+    { title: 'Used To', desc: 'عادت گذشته', g: 'used to + فعل: عادت در گذشته که دیگر ادامه ندارد', gp: 'برای کارهایی که قبلاً همیشه انجام می‌دادیم اما الان نه', ex: ['I used to smoke.', 'She used to live here.', 'Did you use to play?'], mis: ['I use to go ❌ → I used to go ✅'] },
+    { title: 'Tag Questions', desc: 'سوالات ضمیمه', g: 'جمله مثبت + tag منفی\nجمله منفی + tag مثبت', gp: 'برای تایید گرفتن یا مطمئن شدن', ex: ['You like coffee, don\'t you?', 'She isn\'t here, is she?', 'They went, didn\'t they?'], mis: ['You like it, isn\'t it? ❌ → don\'t you? ✅'] },
+    { title: 'Reported Speech', desc: 'نقل قول غیرمستقیم', g: 'زمان‌ها یک درجه به گذشته برمی‌گردند\nwill→would, can→could', gp: 'برای بازگو کردن حرف دیگران', ex: ['She said she was tired.', 'He told me he would come.', 'They asked if I could help.'], mis: ['She said she is ❌ → She said she was ✅'] },
+    { title: 'Phrasal Verbs', desc: 'افعال دوکلمه‌ای', g: 'فعل + حرف اضافه\nget up, turn on, look after, give up', gp: 'ترکیب فعل و حرف اضافه که معنی جدید می‌سازد', ex: ['Wake up early.', 'Turn off the light.', 'Look after your sister.'], mis: ['Turn off it ❌ → Turn it off ✅'] }
   ];
 
-  const lessons = [];
-  for (let i = 6; i <= TOTAL_DAYS; i++) {
-    const topicIndex = i - 6;
-    const topic = grammarTopics[topicIndex] || grammarTopics[grammarTopics.length - 1];
-    const vocabSample = [
-      { word: 'important', meaning: 'مهم', pronunciation: '/ɪmˈpɔːrtnt/', sentence: 'This is very important.' },
-      { word: 'different', meaning: 'متفاوت', pronunciation: '/ˈdɪfrənt/', sentence: 'They are different.' },
-      { word: 'together', meaning: 'با هم', pronunciation: '/təˈɡeðər/', sentence: 'We work together.' },
-      { word: 'example', meaning: 'مثال', pronunciation: '/ɪɡˈzæmpl/', sentence: 'Give me an example.' },
-      { word: 'problem', meaning: 'مشکل', pronunciation: '/ˈprɑːbləm/', sentence: 'What is the problem?' },
-      { word: 'believe', meaning: 'باور کردن', pronunciation: '/bɪˈliːv/', sentence: 'I believe you.' },
-      { word: 'remember', meaning: 'به یاد آوردن', pronunciation: '/rɪˈmembər/', sentence: 'Do you remember me?' },
-      { word: 'understand', meaning: 'فهمیدن', pronunciation: '/ˌʌndərˈstænd/', sentence: 'I understand now.' },
-      { word: 'decide', meaning: 'تصمیم گرفتن', pronunciation: '/dɪˈsaɪd/', sentence: 'You must decide.' },
-      { word: 'practice', meaning: 'تمرین کردن', pronunciation: '/ˈpræktɪs/', sentence: 'Practice makes perfect.' }
-    ];
-    lessons.push({
-      day: i,
-      title: topic.title,
-      description: topic.desc,
-      grammar: { english: topic.grammar, persian: topic.grammar, examples: ['Example 1', 'Example 2'], mistakes: ['Common mistake 1', 'Common mistake 2'] },
-      vocabulary: vocabSample,
-      listening: { instruction: 'به فایل صوتی گوش دهید.', exercise: 'Fill in the blank.' },
-      speaking: 'درباره این موضوع ۵ جمله بساز و با صدای بلند بگو.',
-      writing: 'یک پاراگراف با استفاده از گرامر امروز بنویس.',
-      friends: { episode: `S0${(i % 10) + 1}E0${(i % 5) + 1}`, scene: 'Friends scene description', expressions: ['Expression 1', 'Expression 2'] },
-      usefulExpressions: ['Useful phrase 1', 'Useful phrase 2', 'Useful phrase 3'],
-      geminiPrompt: `Teach ${topic.title} in English with examples and exercises.`,
-      homework: `${topic.title} را تمرین کن و ۱۰ جمله بنویس.`
+  const vocabSets = [
+    ['always', 'همیشه', '/ˈɔːlweɪz/', 'I always try my best.'],
+    ['usually', 'معمولاً', '/ˈjuːʒuəli/', 'She usually walks to work.'],
+    ['sometimes', 'گاهی', '/ˈsʌmtaɪmz/', 'We sometimes eat out.'],
+    ['never', 'هرگز', '/ˈnevər/', 'He never gives up.'],
+    ['every day', 'هر روز', '/ˈevri deɪ/', 'I practice every day.'],
+    ['important', 'مهم', '/ɪmˈpɔːrtnt/', 'This is very important.'],
+    ['different', 'متفاوت', '/ˈdɪfrənt/', 'They are quite different.'],
+    ['believe', 'باور کردن', '/bɪˈliːv/', 'I believe in myself.'],
+    ['remember', 'یاد آوردن', '/rɪˈmembər/', 'Do you remember me?'],
+    ['practice', 'تمرین', '/ˈpræktɪs/', 'Practice makes perfect.']
+  ];
+
+  const course = [];
+  for (let i = 0; i < TOTAL_DAYS; i++) {
+    const t = grammarTopics[i] || grammarTopics[grammarTopics.length - 1];
+    const vIdx = i % vocabSets.length;
+    const vocab = [];
+    for (let j = 0; j < 10; j++) {
+      const v = vocabSets[(vIdx + j) % vocabSets.length];
+      vocab.push({ word: v[0], meaning: v[1], pronunciation: v[2], sentence: v[3] });
+    }
+    course.push({
+      day: i + 1,
+      title: t.title,
+      description: t.desc,
+      grammar: { english: t.g, persian: t.gp, examples: t.ex || ['Example'], mistakes: t.mis || ['Mistake'] },
+      vocabulary: vocab,
+      listening: { instruction: 'به فایل صوتی گوش دهید و پاسخ دهید.', exercise: 'Fill in the blank: She ___ to school.' },
+      speaking: `۵ جمله با ${t.title} بسازید و با صدای بلند بگویید.`,
+      writing: `یک پاراگراف با استفاده از ${t.title} بنویسید.`,
+      friends: { episode: `S0${(i%5)+1}E0${(i%3)+1}`, scene: 'Friends scene', expressions: ['Expression 1', 'Expression 2'] },
+      usefulExpressions: ['Useful 1', 'Useful 2', 'Useful 3'],
+      geminiPrompt: `Teach ${t.title} with examples for Persian learners.`,
+      homework: `۱۰ جمله با ${t.title} بنویسید.`
     });
   }
-  return lessons;
+  return course;
 }
 
-const FULL_COURSE = [...COURSE_DATA, ...generateRemainingLessons()];
+const FULL_COURSE = getCourseData();
 
-// ---------- STATE ----------
-let appState = {
+// ==================== State ====================
+let state = {
   lessons: [],
   notes: '',
   xp: 0,
@@ -260,517 +105,428 @@ let appState = {
   checklists: {}
 };
 
-// ---------- LOCAL STORAGE ----------
+// ==================== Storage ====================
 function loadState() {
   try {
-    const lessonsData = localStorage.getItem(STORAGE_KEYS.LESSONS);
-    appState.lessons = lessonsData ? JSON.parse(lessonsData) : [];
-    appState.notes = localStorage.getItem(STORAGE_KEYS.NOTES) || '';
-    appState.xp = parseInt(localStorage.getItem(STORAGE_KEYS.XP)) || 0;
-    appState.currentDay = parseInt(localStorage.getItem(STORAGE_KEYS.CURRENT_DAY)) || 1;
-    appState.streak = parseInt(localStorage.getItem(STORAGE_KEYS.STREAK)) || 0;
-    appState.completedCount = parseInt(localStorage.getItem(STORAGE_KEYS.COMPLETED_COUNT)) || 0;
-    appState.vocabMastered = JSON.parse(localStorage.getItem(STORAGE_KEYS.VOCAB_MASTERED)) || {};
-    appState.checklists = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHECKLISTS)) || {};
-  } catch (e) {
-    console.warn('Failed to load state, initializing fresh.');
-    initializeFreshState();
-  }
+    const d = localStorage.getItem(STORAGE.LESSONS);
+    state.lessons = d ? JSON.parse(d) : [];
+    state.notes = localStorage.getItem(STORAGE.NOTES) || '';
+    state.xp = +localStorage.getItem(STORAGE.XP) || 0;
+    state.currentDay = +localStorage.getItem(STORAGE.DAY) || 1;
+    state.streak = +localStorage.getItem(STORAGE.STREAK) || 0;
+    state.completedCount = +localStorage.getItem(STORAGE.COMPLETED) || 0;
+    state.vocabMastered = JSON.parse(localStorage.getItem(STORAGE.VOCAB)) || {};
+    state.checklists = JSON.parse(localStorage.getItem(STORAGE.CHECKLISTS)) || {};
+  } catch { initFresh(); }
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEYS.LESSONS, JSON.stringify(appState.lessons));
-  localStorage.setItem(STORAGE_KEYS.NOTES, appState.notes);
-  localStorage.setItem(STORAGE_KEYS.XP, appState.xp.toString());
-  localStorage.setItem(STORAGE_KEYS.CURRENT_DAY, appState.currentDay.toString());
-  localStorage.setItem(STORAGE_KEYS.STREAK, appState.streak.toString());
-  localStorage.setItem(STORAGE_KEYS.COMPLETED_COUNT, appState.completedCount.toString());
-  localStorage.setItem(STORAGE_KEYS.VOCAB_MASTERED, JSON.stringify(appState.vocabMastered));
-  localStorage.setItem(STORAGE_KEYS.CHECKLISTS, JSON.stringify(appState.checklists));
+  localStorage.setItem(STORAGE.LESSONS, JSON.stringify(state.lessons));
+  localStorage.setItem(STORAGE.NOTES, state.notes);
+  localStorage.setItem(STORAGE.XP, state.xp.toString());
+  localStorage.setItem(STORAGE.DAY, state.currentDay.toString());
+  localStorage.setItem(STORAGE.STREAK, state.streak.toString());
+  localStorage.setItem(STORAGE.COMPLETED, state.completedCount.toString());
+  localStorage.setItem(STORAGE.VOCAB, JSON.stringify(state.vocabMastered));
+  localStorage.setItem(STORAGE.CHECKLISTS, JSON.stringify(state.checklists));
 }
 
-function initializeFreshState() {
-  appState.lessons = FULL_COURSE.map(lesson => ({
-    ...lesson,
+function initFresh() {
+  state.lessons = FULL_COURSE.map(l => ({
+    ...l,
     completed: false,
-    unlocked: lesson.day === 1,
+    unlocked: l.day === 1,
     checklist: { grammar: false, vocabulary: false, speaking: false, listening: false, friends: false, homework: false, review: false }
   }));
-  appState.currentDay = 1;
-  appState.completedCount = 0;
-  appState.xp = 0;
-  appState.streak = 0;
+  state.currentDay = 1;
+  state.completedCount = 0;
+  state.xp = 0;
+  state.streak = 0;
   saveState();
 }
 
-function initializeLessons() {
-  if (!appState.lessons || appState.lessons.length === 0) {
-    initializeFreshState();
-  }
-  // Sync with course data
-  appState.lessons.forEach(lesson => {
-    if (!lesson.checklist) {
-      lesson.checklist = { grammar: false, vocabulary: false, speaking: false, listening: false, friends: false, homework: false, review: false };
-    }
-    if (lesson.completed === undefined) lesson.completed = false;
-    if (lesson.unlocked === undefined) lesson.unlocked = lesson.day <= appState.currentDay;
+function initLessons() {
+  if (!state.lessons.length) initFresh();
+  state.lessons.forEach(l => {
+    if (!l.checklist) l.checklist = { grammar: false, vocabulary: false, speaking: false, listening: false, friends: false, homework: false, review: false };
+    if (l.completed === undefined) l.completed = false;
+    if (l.unlocked === undefined) l.unlocked = l.day <= state.currentDay;
   });
   saveState();
 }
 
-// ---------- UI HELPERS ----------
-function $(selector) { return document.querySelector(selector); }
-function $$(selector) { return document.querySelectorAll(selector); }
+// ==================== Helpers ====================
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
-function updateText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-// ---------- DASHBOARD UPDATE ----------
+// ==================== Dashboard ====================
 function updateDashboard() {
-  const progressPercent = Math.round((appState.completedCount / TOTAL_DAYS) * 100);
-  updateText('progressPercent', progressPercent + '%');
-  updateText('xpTotal', appState.xp.toLocaleString());
-  updateText('currentDayDisplay', `روز ${appState.currentDay} از ${TOTAL_DAYS}`);
-  updateText('statProgress', progressPercent + '%');
-  updateText('statXp', appState.xp.toLocaleString());
-  updateText('statCurrentDay', appState.currentDay);
-  updateText('statCompletedLessons', appState.completedCount);
-  updateText('statRemainingLessons', TOTAL_DAYS - appState.completedCount);
-  updateText('statStreak', appState.streak);
-  updateText('footerProgress', progressPercent + '%');
+  const pct = Math.round((state.completedCount / TOTAL_DAYS) * 100);
+  setText('progressPercent', pct + '%');
+  setText('xpTotal', state.xp.toLocaleString());
+  setText('currentDayDisplay', `روز ${state.currentDay} از ${TOTAL_DAYS}`);
+  setText('statCurrentDay', state.currentDay);
+  setText('statProgress', pct + '%');
+  setText('statXp', state.xp.toLocaleString());
+  setText('statCompletedLessons', state.completedCount);
+  setText('statRemainingLessons', TOTAL_DAYS - state.completedCount);
+  setText('statStreak', state.streak);
+  setText('footerProgress', pct + '%');
+  
+  const bar = document.getElementById('progressBarFill');
+  if (bar) bar.style.width = pct + '%';
 
-  const progressBar = document.getElementById('progressBarFill');
-  if (progressBar) progressBar.style.width = progressPercent + '%';
+  const level = document.getElementById('sidebarLevel');
+  if (level) level.textContent = `سطح: ${pct < 30 ? 'A1+' : pct < 60 ? 'A2' : pct < 85 ? 'B1' : 'B2'}`;
 
-  const sidebarLevel = document.getElementById('sidebarLevel');
-  if (sidebarLevel) {
-    const level = progressPercent < 30 ? 'A1+' : progressPercent < 60 ? 'A2' : progressPercent < 85 ? 'B1' : 'B2';
-    sidebarLevel.textContent = `سطح: ${level}`;
-  }
-
-  updateTodayLessonCard();
+  updateTodayCard();
 }
 
-function updateTodayLessonCard() {
-  const currentLesson = appState.lessons.find(l => l.day === appState.currentDay);
-  if (!currentLesson) return;
-  updateText('todayDayBadge', `روز ${appState.currentDay}`);
-  updateText('todayLessonTitle', currentLesson.title);
-  updateText('todayLessonDesc', currentLesson.description);
-  updateText('todayGrammar', currentLesson.title);
-  updateText('todayVocab', '10 کلمه جدید');
-  updateText('todayFriends', currentLesson.friends.episode);
-  const quickBtn = document.getElementById('quickOpenLessonBtn');
-  if (quickBtn) quickBtn.setAttribute('data-lesson-day', appState.currentDay);
+function updateTodayCard() {
+  const lesson = state.lessons.find(l => l.day === state.currentDay);
+  if (!lesson) return;
+  setText('todayDayBadge', `روز ${state.currentDay}`);
+  setText('todayLessonTitle', lesson.title);
+  setText('todayLessonDesc', lesson.description);
+  document.getElementById('quickOpenLessonBtn')?.setAttribute('data-lesson-day', state.currentDay);
 }
 
-// ---------- PLANNER RENDER ----------
+// ==================== Planner ====================
 function renderPlanner() {
   const grid = document.getElementById('plannerGrid');
   if (!grid) return;
   grid.innerHTML = '';
-
-  appState.lessons.forEach(lesson => {
+  state.lessons.forEach(l => {
+    const cp = l.checklist ? Math.round((Object.values(l.checklist).filter(Boolean).length / 7) * 100) : 0;
     const card = document.createElement('div');
-    card.className = 'planner-card glass';
-    if (lesson.completed) card.classList.add('completed');
-    if (lesson.day === appState.currentDay) card.classList.add('current');
-
-    const checklistProgress = lesson.checklist
-      ? Math.round((Object.values(lesson.checklist).filter(Boolean).length / 7) * 100)
-      : 0;
-
+    card.className = `planner-card${l.completed ? ' completed' : ''}${l.day === state.currentDay ? ' current' : ''}`;
     card.innerHTML = `
-      <div class="planner-card-header">
-        <span class="planner-day-num">روز ${lesson.day}</span>
-        <span class="planner-status-icon">${lesson.completed ? '✅' : lesson.day === appState.currentDay ? '📖' : '🔒'}</span>
+      <div class="planner-head">
+        <span class="planner-day">روز ${l.day}</span>
+        <span class="planner-status">${l.completed ? '✅' : l.day === state.currentDay ? '📖' : '🔒'}</span>
       </div>
-      <h3 class="planner-lesson-title">${lesson.title}</h3>
-      <p class="planner-lesson-desc">${lesson.description}</p>
-      <div class="planner-progress-indicator">
-        <div class="planner-progress-fill" style="width:${checklistProgress}%"></div>
-      </div>
-      <button class="planner-open-btn" data-lesson-day="${lesson.day}">📖 باز کردن درس</button>
+      <h3 class="planner-title">${l.title}</h3>
+      <p class="planner-desc">${l.description}</p>
+      <div class="planner-fill"><div class="planner-fill-inner" style="width:${cp}%"></div></div>
+      <button class="planner-btn" data-day="${l.day}">📖 باز کردن</button>
     `;
-
-    const openBtn = card.querySelector('.planner-open-btn');
-    openBtn.addEventListener('click', () => openLessonModal(lesson.day));
     grid.appendChild(card);
   });
 }
 
-// ---------- MODAL MANAGEMENT ----------
-let currentModalLessonDay = null;
+// ==================== Modal ====================
+let currentModalDay = null;
 
-function openLessonModal(day) {
-  const lesson = appState.lessons.find(l => l.day === day);
+function openModal(day) {
+  const lesson = state.lessons.find(l => l.day === day);
   if (!lesson) return;
-
-  currentModalLessonDay = day;
+  currentModalDay = day;
   populateModal(lesson);
-
-  const overlay = document.getElementById('lessonModalOverlay');
-  overlay.classList.add('active');
+  document.getElementById('lessonModalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
-function closeLessonModal() {
-  const overlay = document.getElementById('lessonModalOverlay');
-  overlay.classList.remove('active');
+function closeModal() {
+  document.getElementById('lessonModalOverlay').classList.remove('active');
   document.body.style.overflow = '';
-  currentModalLessonDay = null;
+  currentModalDay = null;
 }
 
-function populateModal(lesson) {
-  updateText('modalLessonTitle', `درس روز ${lesson.day}`);
-  updateText('modalLessonName', lesson.title);
-  updateText('modalLessonDesc', lesson.description);
-  updateText('modalGrammarEnglish', lesson.grammar.english);
-  updateText('modalGrammarPersian', lesson.grammar.persian);
+function populateModal(l) {
+  setText('modalLessonTitle', `درس روز ${l.day}`);
+  setText('modalLessonName', l.title);
+  setText('modalLessonDesc', l.description);
+  setText('modalGrammarEnglish', l.grammar.english);
+  setText('modalGrammarPersian', l.grammar.persian);
 
-  // Examples
   const examplesList = document.getElementById('modalExamplesList');
-  if (examplesList) {
-    examplesList.innerHTML = lesson.grammar.examples.map(ex => `<li class="example-item">${ex}</li>`).join('');
-  }
+  if (examplesList) examplesList.innerHTML = l.grammar.examples.map(e => `<li>${e}</li>`).join('');
 
-  // Mistakes
   const mistakesList = document.getElementById('modalMistakesList');
-  if (mistakesList) {
-    mistakesList.innerHTML = lesson.grammar.mistakes.map(m => `<li class="mistake-item">${m}</li>`).join('');
-  }
+  if (mistakesList) mistakesList.innerHTML = l.grammar.mistakes.map(m => `<li>${m}</li>`).join('');
 
-  // Vocabulary table
   const vocabBody = document.getElementById('modalVocabBody');
   if (vocabBody) {
-    vocabBody.innerHTML = lesson.vocabulary.map((v, i) => {
-      const wordKey = `${lesson.day}_${i}`;
-      const mastered = appState.vocabMastered[wordKey] || false;
-      return `
-        <tr>
-          <td>${v.word}</td>
-          <td>${v.meaning}</td>
-          <td>${v.pronunciation}</td>
-          <td>${v.sentence}</td>
-          <td><input type="checkbox" class="vocab-mastered-checkbox" data-vocab-key="${wordKey}" ${mastered ? 'checked' : ''}></td>
-        </tr>`;
+    vocabBody.innerHTML = l.vocabulary.map((v, i) => {
+      const key = `${l.day}_${i}`;
+      const checked = state.vocabMastered[key] ? 'checked' : '';
+      return `<tr>
+        <td>${v.word}</td><td>${v.meaning}</td><td>${v.pronunciation}</td><td>${v.sentence}</td>
+        <td><input type="checkbox" class="vocab-check" data-key="${key}" ${checked}></td>
+      </tr>`;
     }).join('');
   }
 
-  // Friends
-  updateText('modalFriendsEpisode', lesson.friends.episode);
-  updateText('modalFriendsScene', lesson.friends.scene);
-  const friendsExpressions = document.getElementById('modalFriendsExpressions');
-  if (friendsExpressions) {
-    const ul = friendsExpressions.querySelector('ul');
-    if (ul) ul.innerHTML = lesson.friends.expressions.map(e => `<li>${e}</li>`).join('');
-  }
+  setText('modalListeningInstruction', l.listening.instruction);
+  setText('modalListeningExercise', l.listening.exercise);
+  setText('modalSpeakingPrompt', l.speaking);
+  setText('modalWritingPrompt', l.writing);
+  setText('modalFriendsEpisode', l.friends.episode);
+  setText('modalFriendsScene', l.friends.scene);
+  
+  const exprList = document.getElementById('modalExpressionsList');
+  if (exprList) exprList.innerHTML = l.usefulExpressions.map(e => `<li>${e}</li>`).join('');
 
-  // Useful expressions
-  const expressionsList = document.getElementById('modalExpressionsList');
-  if (expressionsList) {
-    expressionsList.innerHTML = lesson.usefulExpressions.map(e => `<li>${e}</li>`).join('');
-  }
-
-  // Listening
-  updateText('modalListeningInstruction', lesson.listening.instruction);
-  updateText('modalListeningExercise', lesson.listening.exercise);
-
-  // Speaking & Writing
-  updateText('modalSpeakingPrompt', lesson.speaking);
-  updateText('modalWritingPrompt', lesson.writing);
-
-  // Gemini
-  updateText('modalGeminiPrompt', lesson.geminiPrompt);
-
-  // Homework
-  updateText('modalHomeworkContent', lesson.homework);
+  setText('modalGeminiPrompt', l.geminiPrompt);
+  setText('modalHomeworkContent', l.homework);
 
   // Checklist
-  const checkboxes = document.querySelectorAll('#modalChecklistItems .checklist-checkbox');
-  checkboxes.forEach(cb => {
-    const key = cb.getAttribute('data-checklist');
-    cb.checked = lesson.checklist ? lesson.checklist[key] || false : false;
+  document.querySelectorAll('#modalChecklistItems input').forEach(cb => {
+    const key = cb.dataset.checklist;
+    cb.checked = l.checklist ? l.checklist[key] || false : false;
   });
 
   // Notes
-  const notesTextarea = document.getElementById('modalNotesTextarea');
-  if (notesTextarea) {
-    notesTextarea.value = lesson.notes || '';
-  }
+  const notesArea = document.getElementById('modalNotesTextarea');
+  if (notesArea) notesArea.value = l.notes || '';
 
-  // Vocab checkboxes
-  document.querySelectorAll('.vocab-mastered-checkbox').forEach(cb => {
-    cb.addEventListener('change', handleVocabMasteredChange);
+  // Vocab events
+  document.querySelectorAll('.vocab-check').forEach(cb => {
+    cb.onchange = () => {
+      state.vocabMastered[cb.dataset.key] = cb.checked;
+      saveState();
+    };
   });
 }
 
-function handleVocabMasteredChange(e) {
-  const key = e.target.getAttribute('data-vocab-key');
-  appState.vocabMastered[key] = e.target.checked;
-  saveState();
-}
-
-// ---------- LESSON COMPLETION ----------
+// ==================== Complete Lesson ====================
 function completeLesson() {
-  if (!currentModalLessonDay) return;
-  const lesson = appState.lessons.find(l => l.day === currentModalLessonDay);
-  if (!lesson) return;
+  if (!currentModalDay) return;
+  const l = state.lessons.find(les => les.day === currentModalDay);
+  if (!l) return;
 
   // Save checklist
-  const checkboxes = document.querySelectorAll('#modalChecklistItems .checklist-checkbox');
-  let checklistXP = 0;
-  checkboxes.forEach(cb => {
-    const key = cb.getAttribute('data-checklist');
-    if (lesson.checklist) lesson.checklist[key] = cb.checked;
-    if (cb.checked && XP_REWARDS[key]) checklistXP += XP_REWARDS[key];
+  let xpGain = 0;
+  document.querySelectorAll('#modalChecklistItems input').forEach(cb => {
+    const key = cb.dataset.checklist;
+    l.checklist[key] = cb.checked;
+    if (cb.checked && XP_REWARDS[key]) xpGain += XP_REWARDS[key];
   });
 
   // Save notes
-  const notesTextarea = document.getElementById('modalNotesTextarea');
-  if (notesTextarea) lesson.notes = notesTextarea.value;
+  const notesArea = document.getElementById('modalNotesTextarea');
+  if (notesArea) l.notes = notesArea.value;
 
-  if (!lesson.completed) {
-    lesson.completed = true;
-    appState.completedCount++;
-    appState.streak++;
-    appState.xp += checklistXP;
+  if (!l.completed) {
+    l.completed = true;
+    state.completedCount++;
+    state.streak++;
+    state.xp += xpGain;
 
-    // Unlock next lesson
-    const nextLesson = appState.lessons.find(l => l.day === currentModalLessonDay + 1);
-    if (nextLesson) {
-      nextLesson.unlocked = true;
-      if (appState.currentDay < nextLesson.day) {
-        appState.currentDay = nextLesson.day;
-      }
+    const next = state.lessons.find(les => les.day === currentModalDay + 1);
+    if (next) {
+      next.unlocked = true;
+      if (state.currentDay < next.day) state.currentDay = next.day;
     }
   }
 
   saveState();
   updateDashboard();
   renderPlanner();
-  closeLessonModal();
+  closeModal();
 }
 
-// ---------- NOTES MANAGEMENT ----------
-let notesSaveTimer = null;
+// ==================== Notes ====================
+let noteTimer;
 function setupNotes() {
-  const textarea = document.getElementById('dailyNotes');
-  if (!textarea) return;
-  textarea.value = appState.notes;
+  const ta = document.getElementById('dailyNotes');
+  if (!ta) return;
+  ta.value = state.notes;
   updateCharCount();
-
-  textarea.addEventListener('input', () => {
-    if (textarea.value.length > 1000) textarea.value = textarea.value.slice(0, 1000);
+  ta.oninput = () => {
+    if (ta.value.length > 1000) ta.value = ta.value.slice(0, 1000);
     updateCharCount();
-    clearTimeout(notesSaveTimer);
-    notesSaveTimer = setTimeout(() => {
-      appState.notes = textarea.value;
-      saveState();
-    }, 500);
-  });
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => { state.notes = ta.value; saveState(); }, 500);
+  };
 }
 
 function updateCharCount() {
-  const textarea = document.getElementById('dailyNotes');
-  const charCurrent = document.getElementById('charCurrent');
-  if (textarea && charCurrent) {
-    charCurrent.textContent = textarea.value.length;
-  }
+  const ta = document.getElementById('dailyNotes');
+  const cc = document.getElementById('charCurrent');
+  if (ta && cc) cc.textContent = ta.value.length;
 }
 
-// ---------- GEMINI PROMPT ----------
+// ==================== Gemini ====================
 function setupGemini() {
-  const copyBtn = document.getElementById('copyPromptButton');
-  const modalCopyBtn = document.getElementById('modalCopyGeminiBtn');
+  const updatePrompt = () => {
+    const l = state.lessons.find(les => les.day === state.currentDay);
+    if (l) setText('geminiPromptText', l.geminiPrompt);
+  };
 
-  function updateDailyPrompt() {
-    const currentLesson = appState.lessons.find(l => l.day === appState.currentDay);
-    const promptText = document.getElementById('geminiPromptText');
-    if (promptText && currentLesson) {
-      promptText.textContent = currentLesson.geminiPrompt;
-    }
-  }
+  document.getElementById('copyPromptButton')?.addEventListener('click', async () => {
+    const text = document.getElementById('geminiPromptText')?.textContent || '';
+    await navigator.clipboard.writeText(text).catch(() => {});
+    const btn = document.getElementById('copyPromptButton');
+    btn.textContent = '✅ کپی شد!';
+    setTimeout(() => { btn.textContent = '📋 کپی پرامپت'; }, 2000);
+  });
 
-  async function copyPrompt(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      return true;
-    }
-  }
+  document.getElementById('modalCopyGeminiBtn')?.addEventListener('click', async () => {
+    const text = document.getElementById('modalGeminiPrompt')?.textContent || '';
+    await navigator.clipboard.writeText(text).catch(() => {});
+    const btn = document.getElementById('modalCopyGeminiBtn');
+    btn.textContent = '✅ کپی شد!';
+    setTimeout(() => { btn.textContent = '📋 کپی'; }, 2000);
+  });
 
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async () => {
-      const text = document.getElementById('geminiPromptText')?.textContent || '';
-      await copyPrompt(text);
-      copyBtn.textContent = '✅ کپی شد!';
-      setTimeout(() => { copyBtn.textContent = '📋 کپی پرامپت'; }, 2000);
-    });
-  }
-
-  if (modalCopyBtn) {
-    modalCopyBtn.addEventListener('click', async () => {
-      const text = document.getElementById('modalGeminiPrompt')?.textContent || '';
-      await copyPrompt(text);
-      modalCopyBtn.textContent = '✅ کپی شد!';
-      setTimeout(() => { modalCopyBtn.textContent = '📋 کپی'; }, 2000);
-    });
-  }
-
-  updateDailyPrompt();
+  updatePrompt();
 }
 
-// ---------- SETTINGS ----------
+// ==================== Settings ====================
 function setupSettings() {
-  const resetProgressBtn = document.getElementById('resetProgressButton');
-  const resetNotesBtn = document.getElementById('resetNotesButton');
+  document.getElementById('resetProgressButton')?.addEventListener('click', () => {
+    if (confirm('مطمئنی؟ تمام پیشرفت پاک می‌شود.')) {
+      localStorage.clear();
+      initFresh();
+      updateDashboard();
+      renderPlanner();
+      const ta = document.getElementById('dailyNotes');
+      if (ta) { ta.value = ''; updateCharCount(); }
+    }
+  });
 
-  if (resetProgressBtn) {
-    resetProgressBtn.addEventListener('click', () => {
-      if (confirm('آیا مطمئنی؟ تمام پیشرفت، XP و استریک پاک می‌شود.')) {
-        localStorage.clear();
-        initializeFreshState();
-        updateDashboard();
-        renderPlanner();
-        const textarea = document.getElementById('dailyNotes');
-        if (textarea) textarea.value = '';
-        updateCharCount();
-      }
-    });
-  }
-
-  if (resetNotesBtn) {
-    resetNotesBtn.addEventListener('click', () => {
-      if (confirm('تمام یادداشت‌ها پاک شود؟')) {
-        appState.notes = '';
-        saveState();
-        const textarea = document.getElementById('dailyNotes');
-        if (textarea) textarea.value = '';
-        updateCharCount();
-      }
-    });
-  }
+  document.getElementById('resetNotesButton')?.addEventListener('click', () => {
+    if (confirm('یادداشت‌ها پاک شود؟')) {
+      state.notes = '';
+      saveState();
+      const ta = document.getElementById('dailyNotes');
+      if (ta) { ta.value = ''; updateCharCount(); }
+    }
+  });
 }
 
-// ---------- NAVIGATION ----------
+// ==================== Navigation ====================
 function setupNavigation() {
   const sidebar = document.getElementById('sidebar');
-  const menuToggle = document.getElementById('mobileMenuToggle');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  const closeBtn = document.getElementById('sidebarCloseBtn');
 
-  if (menuToggle && sidebar) {
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
   }
 
-  const sections = $$('.content-section');
-  const navItems = $$('.nav-item');
-  const bottomNavItems = $$('.bottom-nav-item');
+  hamburger?.addEventListener('click', openSidebar);
+  closeBtn?.addEventListener('click', closeSidebar);
+  overlay?.addEventListener('click', closeSidebar);
 
-  function showSection(sectionId) {
-    sections.forEach(s => s.classList.remove('active-section'));
-    const target = document.getElementById(sectionId);
-    if (target) target.classList.add('active-section');
-
-    navItems.forEach(n => n.classList.remove('active'));
-    bottomNavItems.forEach(n => n.classList.remove('active'));
-
-    const matchingNav = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
-    const matchingBottom = document.querySelector(`.bottom-nav-item[data-section="${sectionId}"]`);
-    if (matchingNav) matchingNav.classList.add('active');
-    if (matchingBottom) matchingBottom.classList.add('active');
-
-    if (sidebar) sidebar.classList.remove('open');
+  function showSection(id) {
+    $$('.content-section').forEach(s => s.classList.remove('active-section'));
+    document.getElementById(id)?.classList.add('active-section');
+    $$('.nav-link, .bottom-nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
+    document.querySelector(`.bottom-nav-item[data-section="${id}"]`)?.classList.add('active');
+    closeSidebar();
   }
 
-  navItems.forEach(item => {
+  $$('.nav-link, .bottom-nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
-      const sectionId = item.getAttribute('data-section');
-      if (sectionId) showSection(sectionId);
-    });
-  });
-
-  bottomNavItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      const sectionId = item.getAttribute('data-section');
-      if (sectionId) showSection(sectionId);
+      const sec = item.dataset.section;
+      if (sec) showSection(sec);
     });
   });
 }
 
-// ---------- MODAL EVENTS ----------
-function setupModalEvents() {
-  const overlay = document.getElementById('lessonModalOverlay');
-  const closeBtn = document.getElementById('modalCloseBtn');
-  const completeBtn = document.getElementById('modalCompleteBtn');
-  const quickBtn = document.getElementById('quickOpenLessonBtn');
+// ==================== Events ====================
+function setupEvents() {
+  document.getElementById('modalCloseBtn')?.addEventListener('click', closeModal);
+  document.getElementById('lessonModalOverlay')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.getElementById('modalCompleteBtn')?.addEventListener('click', completeLesson);
 
-  if (closeBtn) closeBtn.addEventListener('click', closeLessonModal);
-  if (overlay) overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeLessonModal();
+  document.getElementById('quickOpenLessonBtn')?.addEventListener('click', () => {
+    const day = +document.getElementById('quickOpenLessonBtn').dataset.lessonDay;
+    if (day) openModal(day);
   });
 
-  if (completeBtn) completeBtn.addEventListener('click', completeLesson);
-
-  if (quickBtn) {
-    quickBtn.addEventListener('click', () => {
-      const day = parseInt(quickBtn.getAttribute('data-lesson-day'));
-      if (day) openLessonModal(day);
-    });
-  }
-
-  // Delegated event for planner open buttons
   document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('planner-open-btn')) {
-      const day = parseInt(e.target.getAttribute('data-lesson-day'));
-      if (day) openLessonModal(day);
+    if (e.target.classList.contains('planner-btn')) {
+      const day = +e.target.dataset.day;
+      if (day) openModal(day);
     }
   });
 
-  // Checklist change in modal
   document.getElementById('modalChecklistItems')?.addEventListener('change', (e) => {
-    if (e.target.classList.contains('checklist-checkbox')) {
-      const key = e.target.getAttribute('data-checklist');
-      if (currentModalLessonDay && appState.lessons) {
-        const lesson = appState.lessons.find(l => l.day === currentModalLessonDay);
-        if (lesson && lesson.checklist) {
-          lesson.checklist[key] = e.target.checked;
-          saveState();
-        }
+    if (e.target.tagName === 'INPUT' && currentModalDay) {
+      const l = state.lessons.find(les => les.day === currentModalDay);
+      if (l?.checklist) {
+        l.checklist[e.target.dataset.checklist] = e.target.checked;
+        saveState();
       }
     }
   });
 
-  // Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLessonModal();
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Vocab filters
+  $$('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderVocab(btn.dataset.filter);
+    });
   });
 }
 
-// ---------- INITIALIZATION ----------
+// ==================== Render Vocab ====================
+function renderVocab(filter = 'all') {
+  const list = document.getElementById('vocabList');
+  if (!list) return;
+  let allWords = [];
+  state.lessons.forEach(l => {
+    l.vocabulary.forEach((v, i) => {
+      const key = `${l.day}_${i}`;
+      allWords.push({ ...v, key, mastered: !!state.vocabMastered[key] });
+    });
+  });
+
+  if (filter === 'mastered') allWords = allWords.filter(w => w.mastered);
+  if (filter === 'unmastered') allWords = allWords.filter(w => !w.mastered);
+
+  list.innerHTML = allWords.map(w => `
+    <div class="vocab-item">
+      <div>
+        <span class="vocab-word">${w.word}</span>
+        <span class="vocab-meaning"> - ${w.meaning}</span>
+      </div>
+      <input type="checkbox" class="vocab-check" data-key="${w.key}" ${w.mastered ? 'checked' : ''}>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('#vocabList .vocab-check').forEach(cb => {
+    cb.onchange = () => {
+      state.vocabMastered[cb.dataset.key] = cb.checked;
+      saveState();
+    };
+  });
+}
+
+// ==================== Init ====================
 function init() {
   loadState();
-  initializeLessons();
+  initLessons();
   updateDashboard();
   renderPlanner();
+  renderVocab();
   setupNotes();
   setupGemini();
   setupSettings();
   setupNavigation();
-  setupModalEvents();
-  console.log('✅ English Master initialized successfully.');
+  setupEvents();
+  console.log('✅ English Master ready');
 }
 
 document.addEventListener('DOMContentLoaded', init);
