@@ -4,57 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>English Master | یادگیری زبان انگلیسی</title>
-  <meta name="description" content="English Master – اپلیکیشن شخصی یادگیری زبان انگلیسی از سطح A1+ به A2">
+  <meta name="description" content="English Master – اپلیکیشن شخصی یادگیری زبان انگلیسی">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- ========== SIDEBAR (Desktop) ========== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="logo-icon" aria-hidden="true">🇬🇧</div>
-      <h2 class="sidebar-title">English Master</h2>
-    </div>
-    <nav class="sidebar-nav" id="sidebarNav">
-      <a href="#dashboardSection" class="nav-item active" data-section="dashboardSection">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">داشبورد</span>
-      </a>
-      <a href="#plannerSection" class="nav-item" data-section="plannerSection">
-        <span class="nav-icon">📅</span>
-        <span class="nav-label">برنامه ۳۰ روزه</span>
-      </a>
-      <a href="#vocabularySection" class="nav-item" data-section="vocabularySection">
-        <span class="nav-icon">📚</span>
-        <span class="nav-label">واژگان</span>
-      </a>
-      <a href="#notesSection" class="nav-item" data-section="notesSection">
-        <span class="nav-icon">📝</span>
-        <span class="nav-label">یادداشت‌ها</span>
-      </a>
-      <a href="#geminiPromptSection" class="nav-item" data-section="geminiPromptSection">
-        <span class="nav-icon">🤖</span>
-        <span class="nav-label">Gemini</span>
-      </a>
-      <a href="#settingsSection" class="nav-item" data-section="settingsSection">
-        <span class="nav-icon">⚙️</span>
-        <span class="nav-label">تنظیمات</span>
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="level-badge" id="sidebarLevel">سطح: A1+</div>
-    </div>
-  </aside>
-
-  <!-- ========== MAIN CONTENT ========== -->
-  <main class="main-content" id="mainContent">
-    <!-- Header -->
-    <header class="site-header" id="siteHeader">
-      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="منو">
-        <span></span><span></span><span></span>
-      </button>
-      <div class="header-info">
-        <h1 class="project-title">English Master</h1>
-        <p class="current-day" id="currentDayDisplay">روز ۱ از ۳۰</p>
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="header-logo" id="headerLogo" aria-label="English Master Logo">
+          <span class="logo-icon">🇬🇧</span>
+        </div>
+        <div class="header-titles">
+          <h1 class="project-title" id="projectTitle">English Master</h1>
+          <p class="current-day" id="currentDayDisplay">روز ۱ از ۳۰</p>
+        </div>
       </div>
       <div class="header-stats">
         <div class="header-badge" id="headerProgressBadge">
@@ -66,167 +30,368 @@
           <span class="badge-value" id="xpTotal">0</span>
         </div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- Dashboard Section -->
-    <section class="content-section active-section" id="dashboardSection">
-      <!-- Stats Cards -->
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card glass" id="progressCard">
-          <div class="stat-icon">📊</div>
-          <div class="stat-info">
-            <span class="stat-label">پیشرفت کل</span>
-            <span class="stat-value" id="statProgress">0%</span>
-            <div class="mini-progress-bar"><div class="mini-progress-fill" id="headerProgressBar"></div></div>
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content" id="mainContent">
+    <div class="content-wrapper">
+
+      <!-- ===== DASHBOARD CARDS ===== -->
+      <section class="dashboard-section" id="dashboardSection" aria-labelledby="dashboardHeading">
+        <h2 class="section-heading" id="dashboardHeading">📊 داشبورد</h2>
+        <div class="stats-grid" id="statsGrid">
+
+          <div class="stat-card glass" id="currentDayCard">
+            <div class="stat-icon" aria-hidden="true">📅</div>
+            <div class="stat-info">
+              <span class="stat-label">روز جاری</span>
+              <span class="stat-value" id="statCurrentDay">۱</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass" id="progressCard">
+            <div class="stat-icon" aria-hidden="true">📊</div>
+            <div class="stat-info">
+              <span class="stat-label">پیشرفت کل</span>
+              <span class="stat-value" id="statProgress">0%</span>
+              <div class="mini-progress-bar">
+                <div class="mini-progress-fill" id="progressBarFill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card glass" id="xpCard">
+            <div class="stat-icon" aria-hidden="true">⭐</div>
+            <div class="stat-info">
+              <span class="stat-label">XP</span>
+              <span class="stat-value" id="statXp">0</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass" id="completedLessonsCard">
+            <div class="stat-icon" aria-hidden="true">✅</div>
+            <div class="stat-info">
+              <span class="stat-label">درس‌های تکمیل شده</span>
+              <span class="stat-value" id="statCompletedLessons">0</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass" id="remainingLessonsCard">
+            <div class="stat-icon" aria-hidden="true">📋</div>
+            <div class="stat-info">
+              <span class="stat-label">درس‌های باقی‌مانده</span>
+              <span class="stat-value" id="statRemainingLessons">30</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass" id="streakCard">
+            <div class="stat-icon" aria-hidden="true">🔥</div>
+            <div class="stat-info">
+              <span class="stat-label">روزهای پیاپی</span>
+              <span class="stat-value" id="statStreak">0</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===== TODAY'S LESSON ===== -->
+      <section class="today-section" id="todaySection" aria-labelledby="todayHeading">
+        <h2 class="section-heading" id="todayHeading">📖 درس امروز</h2>
+        <div class="today-card glass" id="todayLessonCard">
+          <div class="today-card-header">
+            <span class="today-day-badge" id="todayDayBadge">روز ۱</span>
+            <h3 class="today-lesson-title" id="todayLessonTitle">Present Simple - حال ساده</h3>
+          </div>
+          <p class="today-lesson-desc" id="todayLessonDesc">
+            یادگیری زمان حال ساده در انگلیسی، ساختار جملات مثبت، منفی و سوالی.
+          </p>
+          <div class="today-topics" id="todayTopics">
+            <span class="today-topic"><span class="topic-dot grammar-dot"></span>گرامر</span>
+            <span class="today-topic"><span class="topic-dot vocab-dot"></span>واژگان</span>
+            <span class="today-topic"><span class="topic-dot friends-dot"></span>Friends</span>
+            <span class="today-topic"><span class="topic-dot speaking-dot"></span>مکالمه</span>
+          </div>
+          <button class="btn-primary btn-open-lesson" id="quickOpenLessonBtn" data-lesson-day="1">
+            🚀 شروع درس امروز
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== 30-DAY PLANNER ===== -->
+      <section class="planner-section" id="plannerSection" aria-labelledby="plannerHeading">
+        <h2 class="section-heading" id="plannerHeading">📅 برنامه ۳۰ روزه</h2>
+        <div class="planner-grid" id="plannerGrid">
+          <!-- 30 lesson cards generated by JavaScript -->
+        </div>
+        <noscript>
+          <p class="noscript-message">برای نمایش برنامه ۳۰ روزه، جاوااسکریپت را فعال کنید.</p>
+        </noscript>
+      </section>
+
+      <!-- ===== NOTES ===== -->
+      <section class="notes-section" id="notesSection" aria-labelledby="notesHeading">
+        <h2 class="section-heading" id="notesHeading">📝 یادداشت‌ها</h2>
+        <div class="notes-wrapper glass" id="notesWrapper">
+          <textarea
+            class="notes-textarea"
+            id="dailyNotes"
+            rows="6"
+            maxlength="1000"
+            placeholder="یادداشت‌های خود را اینجا بنویسید..."
+            aria-label="یادداشت‌های روزانه"
+          ></textarea>
+          <div class="notes-footer">
+            <div class="character-counter" id="characterCounter">
+              <span class="char-current" id="charCurrent">0</span>
+              <span class="char-separator">/</span>
+              <span class="char-max" id="charMax">1000</span>
+            </div>
+            <span class="autosave-indicator" id="autosaveIndicator">💾 ذخیره خودکار</span>
           </div>
         </div>
-        <div class="stat-card glass" id="completedDaysCard">
-          <div class="stat-icon">✅</div>
-          <div class="stat-info">
-            <span class="stat-label">روزهای تکمیل شده</span>
-            <span class="stat-value" id="statCompletedDays">0</span>
+      </section>
+
+      <!-- ===== GEMINI PROMPT ===== -->
+      <section class="gemini-section" id="geminiPromptSection" aria-labelledby="geminiHeading">
+        <h2 class="section-heading" id="geminiHeading">🤖 پرامپت Gemini</h2>
+        <div class="gemini-wrapper glass" id="geminiWrapper">
+          <div class="prompt-display" id="promptDisplay">
+            <p class="prompt-text" id="geminiPromptText">پرامپت امروز در حال بارگذاری...</p>
           </div>
+          <button class="btn-secondary btn-copy" id="copyPromptButton" aria-label="کپی پرامپت">
+            📋 کپی پرامپت
+          </button>
         </div>
-        <div class="stat-card glass" id="remainingDaysCard">
-          <div class="stat-icon">📅</div>
-          <div class="stat-info">
-            <span class="stat-label">روزهای باقی‌مانده</span>
-            <span class="stat-value" id="statRemainingDays">30</span>
+      </section>
+
+      <!-- ===== SETTINGS ===== -->
+      <section class="settings-section" id="settingsSection" aria-labelledby="settingsHeading">
+        <h2 class="section-heading" id="settingsHeading">⚙️ تنظیمات</h2>
+        <div class="settings-grid" id="settingsGrid">
+
+          <div class="settings-card glass" id="resetProgressCard">
+            <div class="settings-card-content">
+              <h3 class="settings-card-title">بازنشانی پیشرفت</h3>
+              <p class="settings-card-desc">تمام درس‌های تکمیل شده، XP و استریک پاک می‌شوند.</p>
+            </div>
+            <button class="btn-danger" id="resetProgressButton">
+              🔄 بازنشانی پیشرفت
+            </button>
           </div>
-        </div>
-        <div class="stat-card glass" id="studyStreakCard">
-          <div class="stat-icon">🔥</div>
-          <div class="stat-info">
-            <span class="stat-label">روزهای پیاپی</span>
-            <span class="stat-value" id="statStreak">0</span>
+
+          <div class="settings-card glass" id="resetNotesCard">
+            <div class="settings-card-content">
+              <h3 class="settings-card-title">پاک کردن یادداشت‌ها</h3>
+              <p class="settings-card-desc">تمام یادداشت‌های ذخیره شده پاک می‌شوند.</p>
+            </div>
+            <button class="btn-danger" id="resetNotesButton">
+              🗑️ پاک کردن یادداشت‌ها
+            </button>
           </div>
-        </div>
-      </div>
 
-      <!-- Today's Lesson Card -->
-      <div class="today-card glass" id="todayLessonCard">
-        <div class="today-header">
-          <h2 class="section-title">📖 درس امروز</h2>
-          <span class="today-day-badge" id="todayDayBadge">روز ۱</span>
         </div>
-        <div class="today-topics" id="todayTopics">
-          <div class="topic-item"><span class="topic-icon">📝</span><span>گرامر: </span><span id="todayGrammar">Present Simple</span></div>
-          <div class="topic-item"><span class="topic-icon">📚</span><span>واژگان: </span><span id="todayVocab">10 کلمه جدید</span></div>
-          <div class="topic-item"><span class="topic-icon">🎬</span><span>Friends: </span><span id="todayFriends">S01E01 Pilot</span></div>
-        </div>
-        <button class="btn-primary" id="quickContinueBtn">🚀 ادامه درس امروز</button>
-      </div>
+      </section>
 
-      <!-- Quote & Tip -->
-      <div class="quote-tip-row">
-        <div class="quote-card glass" id="motivationalQuote">
-          <p class="quote-text">"The secret of getting ahead is getting started."</p>
-          <p class="quote-author">— Mark Twain</p>
-        </div>
-        <div class="tip-card glass" id="englishTip">
-          <p class="tip-label">💡 نکته انگلیسی</p>
-          <p class="tip-text">هر روز حداقل ۱۵ دقیقه به انگلیسی گوش بده، حتی اگر متوجه نشوی.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 30-Day Planner Section -->
-    <section class="content-section" id="plannerSection">
-      <h2 class="section-title">📅 برنامه ۳۰ روزه</h2>
-      <div class="planner-grid" id="plannerGrid">
-        <!-- Populated by JavaScript -->
-      </div>
-    </section>
-
-    <!-- Vocabulary Section -->
-    <section class="content-section" id="vocabularySection">
-      <h2 class="section-title">📚 واژگان</h2>
-      <div class="vocab-filters">
-        <button class="vocab-filter-btn active" data-filter="all">همه</button>
-        <button class="vocab-filter-btn" data-filter="mastered">یادگرفته شده</button>
-        <button class="vocab-filter-btn" data-filter="unmastered">در حال یادگیری</button>
-      </div>
-      <div class="vocab-list-container glass" id="vocabListContainer">
-        <div class="vocab-list" id="vocabList">
-          <!-- Populated by JavaScript -->
-        </div>
-      </div>
-    </section>
-
-    <!-- Notes Section -->
-    <section class="content-section" id="notesSection">
-      <h2 class="section-title">📝 یادداشت‌های امروز</h2>
-      <div class="notes-wrapper glass">
-        <textarea class="notes-textarea" id="dailyNotes" rows="6" maxlength="1000" placeholder="یادداشت‌های انگلیسی خود را اینجا بنویسید..."></textarea>
-        <div class="character-counter">
-          <span id="charCurrent">0</span>/<span id="charMax">1000</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Gemini Prompt Section -->
-    <section class="content-section" id="geminiPromptSection">
-      <h2 class="section-title">🤖 پرامپت Gemini</h2>
-      <div class="prompt-container glass">
-        <div class="prompt-box" id="promptBox">
-          <p id="geminiPromptText">پرامپت امروز در حال بارگذاری...</p>
-        </div>
-        <button class="btn-secondary" id="copyPromptButton">📋 کپی پرامپت</button>
-      </div>
-    </section>
-
-    <!-- Settings Section -->
-    <section class="content-section" id="settingsSection">
-      <h2 class="section-title">⚙️ تنظیمات</h2>
-      <div class="settings-grid">
-        <div class="settings-card glass">
-          <h3>بازنشانی پیشرفت</h3>
-          <p>تمام درس‌های تکمیل شده و XP پاک می‌شود.</p>
-          <button class="btn-danger" id="resetProgressButton">🔄 بازنشانی پیشرفت</button>
-        </div>
-        <div class="settings-card glass">
-          <h3>بازنشانی یادداشت‌ها</h3>
-          <p>تمام یادداشت‌های ذخیره شده پاک می‌شود.</p>
-          <button class="btn-danger" id="resetNotesButton">🗑️ پاک کردن یادداشت‌ها</button>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
-  <!-- ========== LESSON MODAL ========== -->
-  <div class="modal-overlay" id="lessonModalOverlay">
+  <!-- ==================== LESSON MODAL ==================== -->
+  <div class="modal-overlay" id="lessonModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalLessonTitle">
     <div class="modal-container" id="lessonModal">
+
       <div class="modal-header">
         <h2 class="modal-title" id="modalLessonTitle">درس روز ۱</h2>
-        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="بستن">&times;</button>
       </div>
+
       <div class="modal-body" id="modalBody">
-        <!-- Populated by JavaScript -->
+
+        <!-- Lesson Title & Description -->
+        <div class="modal-block" id="modalLessonInfo">
+          <h3 class="modal-lesson-name" id="modalLessonName">Present Simple</h3>
+          <p class="modal-lesson-desc" id="modalLessonDesc">زمان حال ساده در انگلیسی</p>
+        </div>
+
+        <!-- Grammar -->
+        <div class="modal-block" id="modalGrammarBlock">
+          <h4 class="modal-block-title">📝 گرامر</h4>
+          <div class="modal-block-content" id="modalGrammarContent">
+            <p class="grammar-english" id="modalGrammarEnglish">گرامر انگلیسی اینجا قرار می‌گیرد.</p>
+            <p class="grammar-persian" id="modalGrammarPersian">توضیح فارسی گرامر.</p>
+          </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="modal-block" id="modalExamplesBlock">
+          <h4 class="modal-block-title">💬 مثال‌ها</h4>
+          <ul class="examples-list" id="modalExamplesList">
+            <li class="example-item">I go to school every day.</li>
+            <li class="example-item">She doesn't like coffee.</li>
+            <li class="example-item">Do you speak English?</li>
+          </ul>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div class="modal-block" id="modalMistakesBlock">
+          <h4 class="modal-block-title">⚠️ اشتباهات رایج</h4>
+          <ul class="mistakes-list" id="modalMistakesList">
+            <li class="mistake-item">He go (اشتباه) → He goes (درست)</li>
+          </ul>
+        </div>
+
+        <!-- Vocabulary -->
+        <div class="modal-block" id="modalVocabBlock">
+          <h4 class="modal-block-title">📚 واژگان (۱۰ کلمه)</h4>
+          <div class="vocab-table-wrapper">
+            <table class="vocab-table" id="modalVocabTable">
+              <thead>
+                <tr>
+                  <th>کلمه</th>
+                  <th>معنی</th>
+                  <th>تلفظ</th>
+                  <th>جمله نمونه</th>
+                  <th>یادگرفتم</th>
+                </tr>
+              </thead>
+              <tbody id="modalVocabBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Listening -->
+        <div class="modal-block" id="modalListeningBlock">
+          <h4 class="modal-block-title">🎧 شنیداری</h4>
+          <p class="listening-instruction" id="modalListeningInstruction">
+            به فایل صوتی گوش دهید و جاهای خالی را پر کنید.
+          </p>
+          <div class="listening-exercise" id="modalListeningExercise">
+            <p class="listening-text">She ___ to school every morning. (go/goes)</p>
+          </div>
+        </div>
+
+        <!-- Speaking -->
+        <div class="modal-block" id="modalSpeakingBlock">
+          <h4 class="modal-block-title">🗣️ مکالمه</h4>
+          <p class="speaking-prompt" id="modalSpeakingPrompt">
+            خودت را با ۵ جمله با استفاده از Present Simple معرفی کن.
+          </p>
+        </div>
+
+        <!-- Writing -->
+        <div class="modal-block" id="modalWritingBlock">
+          <h4 class="modal-block-title">✍️ نوشتاری</h4>
+          <p class="writing-prompt" id="modalWritingPrompt">
+            یک پاراگراف درباره برنامه روزانه‌ات بنویس.
+          </p>
+          <textarea class="writing-textarea" id="modalWritingTextarea" rows="4" placeholder="اینجا بنویس..."></textarea>
+        </div>
+
+        <!-- Friends Episode -->
+        <div class="modal-block" id="modalFriendsBlock">
+          <h4 class="modal-block-title">🎬 Friends</h4>
+          <div class="friends-info" id="modalFriendsInfo">
+            <p class="friends-episode" id="modalFriendsEpisode">S01E01 - The Pilot</p>
+            <p class="friends-scene" id="modalFriendsScene">Scene: Central Perk introduction</p>
+            <div class="friends-expressions" id="modalFriendsExpressions">
+              <h5>عبارات مفید:</h5>
+              <ul>
+                <li>"There's nothing to tell!"</li>
+                <li>"I just grabbed a spoon."</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Useful Expressions -->
+        <div class="modal-block" id="modalExpressionsBlock">
+          <h4 class="modal-block-title">🗨️ عبارات کاربردی</h4>
+          <ul class="expressions-list" id="modalExpressionsList">
+            <li>How are you doing?</li>
+            <li>What do you do?</li>
+            <li>I usually get up at 7.</li>
+          </ul>
+        </div>
+
+        <!-- Gemini Prompt -->
+        <div class="modal-block" id="modalGeminiBlock">
+          <h4 class="modal-block-title">🤖 پرامپت Gemini</h4>
+          <div class="modal-gemini-prompt" id="modalGeminiPrompt">
+            <p>Explain Present Simple tense with 10 examples and common mistakes.</p>
+          </div>
+          <button class="btn-small btn-copy-modal" id="modalCopyGeminiBtn">📋 کپی</button>
+        </div>
+
+        <!-- Homework -->
+        <div class="modal-block" id="modalHomeworkBlock">
+          <h4 class="modal-block-title">📄 تکلیف</h4>
+          <div class="homework-content" id="modalHomeworkContent">
+            <p>۱۰ جمله با Present Simple بنویس و برای خودت بخوان.</p>
+          </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="modal-block" id="modalChecklistBlock">
+          <h4 class="modal-block-title">✅ چک‌لیست</h4>
+          <div class="checklist-items" id="modalChecklistItems">
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="grammar">
+              <span>گرامر</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="vocabulary">
+              <span>واژگان</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="speaking">
+              <span>مکالمه</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="listening">
+              <span>شنیداری</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="friends">
+              <span>Friends</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="homework">
+              <span>تکلیف</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" data-checklist="review">
+              <span>مرور</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="modal-block" id="modalNotesBlock">
+          <h4 class="modal-block-title">📝 یادداشت‌های این درس</h4>
+          <textarea class="modal-notes-textarea" id="modalNotesTextarea" rows="3" placeholder="یادداشت برای این درس..."></textarea>
+        </div>
+
       </div>
+
       <div class="modal-footer">
-        <button class="btn-primary" id="modalCompleteBtn">✅ تکمیل درس</button>
+        <button class="btn-primary btn-complete-lesson" id="modalCompleteBtn">
+          ✅ تکمیل درس
+        </button>
       </div>
+
     </div>
   </div>
 
-  <!-- ========== BOTTOM NAVIGATION (Mobile) ========== -->
-  <nav class="bottom-nav" id="bottomNav">
-    <a href="#dashboardSection" class="bottom-nav-item active" data-section="dashboardSection">
-      <span>🏠</span><span>داشبورد</span>
-    </a>
-    <a href="#plannerSection" class="bottom-nav-item" data-section="plannerSection">
-      <span>📅</span><span>برنامه</span>
-    </a>
-    <a href="#vocabularySection" class="bottom-nav-item" data-section="vocabularySection">
-      <span>📚</span><span>واژگان</span>
-    </a>
-    <a href="#notesSection" class="bottom-nav-item" data-section="notesSection">
-      <span>📝</span><span>یادداشت</span>
-    </a>
-    <a href="#settingsSection" class="bottom-nav-item" data-section="settingsSection">
-      <span>⚙️</span><span>تنظیمات</span>
-    </a>
-  </nav>
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer" id="siteFooter">
+    <div class="footer-container">
+      <p class="footer-text">English Master — مسیر ۳۰ روزه یادگیری انگلیسی</p>
+      <p class="footer-progress">پیشرفت: <span id="footerProgress">0%</span></p>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
